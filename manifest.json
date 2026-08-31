@@ -34,7 +34,6 @@
     "storage"
   ],
   "host_permissions": [
-    "https://kick.com/*",
-    "https://api.kick.com/*"
+    "https://kick.com/api/*"
   ]
 }
