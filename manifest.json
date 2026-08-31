@@ -41,12 +41,8 @@
     "_execute_action": {
       "suggested_key": {
         "default": "Alt+Shift+K",
-        "mac": "Alt+Shift+K",
-        "windows": "Alt+Shift+K",
-        "chromeos": "Alt+Shift+K",
-        "linux": "Alt+Shift+K"
-      },
-      "description": "Open Kick Streamer Monitor"
+        "mac": "Alt+Shift+K"
+      }
     }
   }
 }
