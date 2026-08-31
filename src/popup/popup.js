@@ -388,8 +388,8 @@ function bindEvents() {
     }
   });
 
-  document.getElementById('privacyLink')?.addEventListener('click', (e) => {
-    e.preventDefault();
+  const openPrivacyPage = (e) => {
+    e?.preventDefault?.();
     const url = typeof chrome !== 'undefined' && chrome.runtime?.getURL
       ? chrome.runtime.getURL('src/privacy/privacy.html')
       : '../privacy/privacy.html';
@@ -398,7 +398,10 @@ function bindEvents() {
     } else {
       window.open(url, '_blank');
     }
-  });
+  };
+
+  document.getElementById('privacyLink')?.addEventListener('click', openPrivacyPage);
+  document.getElementById('settingsPrivacyBtn')?.addEventListener('click', openPrivacyPage);
 }
 
 export function checkActiveKickTab() {
