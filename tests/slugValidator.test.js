@@ -91,5 +91,11 @@ describe('slugValidator', () => {
       expect(result.isValid).toBe(false);
       expect(typeof result.error).toBe('string');
     });
+
+    it('rejects external non-Kick URLs', () => {
+      const result = validateSlug('https://twitch.tv/xqc');
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('valid Kick username');
+    });
   });
 });

@@ -3,12 +3,14 @@ export function normalizeSlug(rawInput) {
   let cleaned = rawInput.trim().replace(/^@/, '');
   try {
     if (cleaned.startsWith('http://') || cleaned.startsWith('https://')) {
-      cleaned = new URL(cleaned).pathname.split('/').filter(Boolean)[0] || '';
+      const url = new URL(cleaned);
+      if (!url.hostname.includes('kick.com')) return '';
+      cleaned = url.pathname.split('/').filter(Boolean)[0] || '';
     } else if (/kick\.com\//i.test(cleaned)) {
       cleaned = cleaned.split(/kick\.com\//i)[1]?.split(/[/?#]/)[0] || '';
     }
   } catch {
-    cleaned = cleaned.replace(/^https?:\/\//i, '');
+    return '';
   }
   return cleaned.replace(/^@/, '').trim().toLowerCase();
 }
@@ -19,14 +21,14 @@ export function isValidSlug(slug) {
 
 export function validateSlug(rawInput) {
   if (!rawInput || typeof rawInput !== 'string' || !rawInput.trim()) {
-    return { isValid: false, slug: '', error: 'Streamer name or URL cannot be empty.' };
+    return { isValid: false, slug: '', error: 'Kick username cannot be empty.' };
   }
   const slug = normalizeSlug(rawInput);
   if (!slug) {
-    return { isValid: false, slug: '', error: 'Invalid channel slug or URL.' };
+    return { isValid: false, slug: '', error: 'Please enter a valid Kick username.' };
   }
   if (!isValidSlug(slug)) {
-    return { isValid: false, slug, error: 'Channel slug may only contain letters, numbers, and underscores.' };
+    return { isValid: false, slug, error: 'Kick username may only contain letters, numbers, and underscores.' };
   }
   return { isValid: true, slug, error: null };
 }

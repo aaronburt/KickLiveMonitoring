@@ -375,11 +375,7 @@ describe('Adversarial Stress & State Transition Rigor', () => {
 
     for (const input of maliciousInputs) {
       const res = validateSlug(input);
-      if (input === 'https://evil.com/xqc') {
-        expect(res.slug).toBe('xqc');
-      } else {
-        expect(res.isValid).toBe(false);
-      }
+      expect(res.isValid).toBe(false);
     }
 
     const validVariants = [
