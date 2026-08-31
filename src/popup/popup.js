@@ -46,6 +46,45 @@ function updateCounters() {
   const countOffline = document.getElementById('countOffline');
   if (countOffline) countOffline.textContent = String(offlineCount);
 
+  const filterNav = document.querySelector('.filter-nav');
+  const tabAll = document.getElementById('filterAll') || document.querySelector('.filter-tab[data-filter="all"]');
+  const tabLive = document.getElementById('filterLive') || document.querySelector('.filter-tab[data-filter="live"]');
+  const tabOffline = document.getElementById('filterOffline') || document.querySelector('.filter-tab[data-filter="offline"]');
+
+  if (filterNav) {
+    if (list.length === 0) {
+      filterNav.classList.add('hidden');
+    } else {
+      filterNav.classList.remove('hidden');
+    }
+  }
+
+  if (tabLive) {
+    if (liveCount === 0) {
+      tabLive.classList.add('hidden');
+      if (state.filter === 'live') {
+        state.filter = 'all';
+        document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
+        tabAll?.classList.add('active');
+      }
+    } else {
+      tabLive.classList.remove('hidden');
+    }
+  }
+
+  if (tabOffline) {
+    if (offlineCount === 0) {
+      tabOffline.classList.add('hidden');
+      if (state.filter === 'offline') {
+        state.filter = 'all';
+        document.querySelectorAll('.filter-tab').forEach((t) => t.classList.remove('active'));
+        tabAll?.classList.add('active');
+      }
+    } else {
+      tabOffline.classList.remove('hidden');
+    }
+  }
+
   const headerLiveCounter = document.getElementById('headerLiveCounter') || document.getElementById('headerLiveCount');
   if (headerLiveCounter) {
     headerLiveCounter.textContent = `${liveCount} Live`;
