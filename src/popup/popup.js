@@ -84,12 +84,12 @@ function renderList() {
       : `<span class="badge-offline">${s.error ? 'Error' : 'Offline'}</span>`;
 
     const details = s.isLive
-      ? `<div class="stream-title">${escapeHtml(s.title || 'Live')}</div>
-         <div class="card-bottom-row">
+      ? `<div class="card-bottom-row">
            <span class="category-tag">${escapeHtml(s.category || 'Kick')}</span>
-           <span class="viewer-count">👥 ${formatViewerCount(s.viewerCount)}</span>
          </div>`
-      : `<div class="stream-title">${s.lastCheckedAt ? `Checked ${formatRelativeTime(s.lastCheckedAt)}` : 'Not checked'}</div>`;
+      : `<div class="card-bottom-row">
+           <span class="offline-time">${s.lastCheckedAt ? `Checked ${formatRelativeTime(s.lastCheckedAt)}` : 'Offline'}</span>
+         </div>`;
 
     card.innerHTML = `
       <div class="avatar-wrapper">
