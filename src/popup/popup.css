@@ -30,13 +30,16 @@
 html {
   width: 100%;
   height: 100%;
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-primary);
 }
 
 body {
-  width: 380px;
+  width: 100%;
+  min-width: 380px;
   min-height: 480px;
-  height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--bg-primary);
@@ -48,21 +51,12 @@ body {
   user-select: none;
 }
 
-body.popout-mode,
-@media screen and (min-width: 381px) {
-  body {
-    width: 100%;
-    min-width: 300px;
-    height: 100vh;
-    max-height: none;
-  }
-}
-
 .app-container {
   display: flex;
   flex-direction: column;
   width: 100%;
   height: 100vh;
+  box-sizing: border-box;
   overflow: hidden;
 }
 
@@ -644,7 +638,7 @@ input:checked + .toggle-slider:before {
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 500;
-  max-width: 180px;
+  max-width: 320px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
