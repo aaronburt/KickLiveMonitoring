@@ -11,6 +11,7 @@ import {
 import {
   formatViewerCount,
   formatRelativeTime,
+  formatStreamDuration,
   escapeHtml,
 } from '../utils/formatters.js';
 import { searchChannels } from '../services/kickApi.js';
@@ -34,44 +35,50 @@ function showFeedback(msg, type = 'error') {
 
 function updateCounters() {
   const list = Object.values(state.streamers);
-  const live = list.filter((s) => s.isLive).length;
-  const countAll = document.getElementById('countAll');
-  const countLive = document.getElementById('countLive');
-  const countOffline = document.getElementById('countOffline');
-  const headerLive = document.getElementById('headerLiveCounter');
+  const liveCount = list.filter((s) => s.isLive).length;
+  const offlineCount = list.length - liveCount;
 
+  const countAll = document.getElementById('countAll');
   if (countAll) countAll.textContent = String(list.length);
-  if (countLive) countLive.textContent = String(live);
-  if (countOffline) countOffline.textContent = String(list.length - live);
-  if (headerLive) headerLive.textContent = `${live} Live`;
+  const countLive = document.getElementById('countLive');
+  if (countLive) countLive.textContent = String(liveCount);
+  const countOffline = document.getElementById('countOffline');
+  if (countOffline) countOffline.textContent = String(offlineCount);
+  const headerLiveCount = document.getElementById('headerLiveCount');
+  if (headerLiveCount) headerLiveCount.textContent = `${liveCount} LIVE`;
 }
 
 function renderList() {
   const container = document.getElementById('streamersList');
   if (!container) return;
-  container.innerHTML = '';
 
   const list = Object.values(state.streamers);
   const filtered = list.filter((s) => {
     if (state.filter === 'live') return s.isLive;
     if (state.filter === 'offline') return !s.isLive;
     return true;
-  }).sort((a, b) => {
-    if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
-    if (a.isLive) return (b.viewerCount || 0) - (a.viewerCount || 0);
-    return (a.username || a.slug).localeCompare(b.username || b.slug);
   });
 
-  if (list.length === 0) {
-    container.innerHTML = '<div class="empty-state"><h3 class="empty-title">No streamers tracked</h3><p class="empty-subtitle">Add your favorite Kick creators above.</p></div>';
-    return;
-  }
-
   if (filtered.length === 0) {
-    container.innerHTML = `<div class="empty-state"><h3 class="empty-title">No ${state.filter} streamers</h3></div>`;
+    const msg = state.filter === 'all'
+      ? 'No streamers added yet. Track your first creator above!'
+      : state.filter === 'live'
+      ? 'No tracked streamers are currently live.'
+      : 'No tracked streamers are offline.';
+    container.innerHTML = `
+      <div class="empty-state">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+        <p class="empty-title">Nothing to show</p>
+        <p class="empty-subtitle">${msg}</p>
+      </div>`;
     return;
   }
 
+  container.innerHTML = '';
   for (const s of filtered) {
     const card = document.createElement('div');
     card.className = `streamer-card ${s.isLive ? 'is-live' : ''}`;
@@ -83,9 +90,11 @@ function renderList() {
       ? `<span class="badge-live">LIVE &bull; ${formatViewerCount(s.viewerCount)}</span>`
       : `<span class="badge-offline">${s.error ? 'Error' : 'Offline'}</span>`;
 
+    const duration = s.isLive && s.startedAt ? formatStreamDuration(s.startedAt) : '';
     const details = s.isLive
       ? `<div class="card-bottom-row">
            <span class="category-tag">${escapeHtml(s.category || 'Kick')}</span>
+           ${duration ? `<span class="stream-uptime" title="Stream uptime">${duration}</span>` : ''}
          </div>`
       : `<div class="card-bottom-row">
            <span class="offline-time">${s.lastCheckedAt ? `Checked ${formatRelativeTime(s.lastCheckedAt)}` : 'Offline'}</span>
@@ -347,6 +356,13 @@ export async function init() {
   renderList();
   updateCounters();
   bindEvents();
+
+  setInterval(() => {
+    const list = Object.values(state.streamers);
+    if (list.some((s) => s.isLive)) {
+      renderList();
+    }
+  }, 30000);
 }
 
 if (typeof document !== 'undefined') {

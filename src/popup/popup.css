@@ -613,6 +613,8 @@ input:checked + .toggle-slider:before {
 .card-bottom-row {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 8px;
   margin-top: 1px;
 }
 
@@ -623,10 +625,18 @@ input:checked + .toggle-slider:before {
   border-radius: var(--radius-sm);
   font-size: 11px;
   font-weight: 500;
-  max-width: 220px;
+  max-width: 180px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.stream-uptime {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .offline-time {
