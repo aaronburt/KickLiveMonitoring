@@ -45,8 +45,16 @@ function updateCounters() {
   if (countLive) countLive.textContent = String(liveCount);
   const countOffline = document.getElementById('countOffline');
   if (countOffline) countOffline.textContent = String(offlineCount);
-  const headerLiveCount = document.getElementById('headerLiveCount');
-  if (headerLiveCount) headerLiveCount.textContent = `${liveCount} LIVE`;
+
+  const headerLiveCounter = document.getElementById('headerLiveCounter') || document.getElementById('headerLiveCount');
+  if (headerLiveCounter) {
+    headerLiveCounter.textContent = `${liveCount} Live`;
+    if (liveCount > 0) {
+      headerLiveCounter.classList.add('has-live');
+    } else {
+      headerLiveCounter.classList.remove('has-live');
+    }
+  }
 }
 
 function renderList() {

@@ -105,9 +105,17 @@ body {
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: var(--radius-full);
+  background-color: rgba(255, 255, 255, 0.06);
+  color: var(--text-muted);
+  border: 1px solid var(--border-subtle);
+  transition: all 0.2s ease;
+}
+
+.live-counter-badge.has-live {
   background-color: var(--accent-kick-subtle);
   color: var(--accent-kick);
-  border: 1px solid rgba(83, 252, 24, 0.3);
+  border-color: rgba(83, 252, 24, 0.35);
+  box-shadow: 0 0 8px rgba(83, 252, 24, 0.2);
 }
 
 .header-actions {
@@ -546,7 +554,8 @@ input:checked + .toggle-slider:before {
 }
 
 .streamer-card.is-live {
-  border-left: 3px solid var(--accent-kick);
+  border-color: rgba(83, 252, 24, 0.35);
+  box-shadow: inset 3px 0 0 var(--accent-kick), 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
 .avatar-wrapper {
@@ -650,6 +659,9 @@ input:checked + .toggle-slider:before {
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
+  background-color: rgba(255, 255, 255, 0.04);
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
 }
 
 .offline-time {
@@ -658,15 +670,24 @@ input:checked + .toggle-slider:before {
 }
 
 .card-actions {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
-  gap: 4px;
   opacity: 0;
+  pointer-events: none;
   transition: opacity 0.15s ease;
+  background-color: var(--bg-hover);
+  padding: 2px;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
 .streamer-card:hover .card-actions {
   opacity: 1;
+  pointer-events: auto;
 }
 
 .action-btn {
