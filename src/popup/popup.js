@@ -51,8 +51,10 @@ function updateCounters() {
   const tabLive = document.getElementById('filterLive') || document.querySelector('.filter-tab[data-filter="live"]');
   const tabOffline = document.getElementById('filterOffline') || document.querySelector('.filter-tab[data-filter="offline"]');
 
+  const hasMixedStatus = liveCount > 0 && offlineCount > 0;
+
   if (filterNav) {
-    if (list.length === 0) {
+    if (!hasMixedStatus) {
       filterNav.classList.add('hidden');
     } else {
       filterNav.classList.remove('hidden');
@@ -60,7 +62,7 @@ function updateCounters() {
   }
 
   if (tabLive) {
-    if (liveCount === 0) {
+    if (liveCount === 0 || liveCount === list.length) {
       tabLive.classList.add('hidden');
       if (state.filter === 'live') {
         state.filter = 'all';
@@ -73,7 +75,7 @@ function updateCounters() {
   }
 
   if (tabOffline) {
-    if (offlineCount === 0) {
+    if (offlineCount === 0 || offlineCount === list.length) {
       tabOffline.classList.add('hidden');
       if (state.filter === 'offline') {
         state.filter = 'all';
