@@ -5,8 +5,6 @@ import {
   MESSAGE_TYPES,
   onExtensionInstalled,
   onExtensionStartup,
-  setupContextMenu,
-  handleContextMenuClick,
 } from '../src/background/serviceWorker.js';
 import { setStreamer, getStreamer, getSettings } from '../src/services/storageService.js';
 import { POLL_ALARM_NAME } from '../src/background/alarmManager.js';
@@ -169,28 +167,12 @@ describe('serviceWorker', () => {
     });
   });
 
-  describe('context menu and sync', () => {
-    it('sets up context menu without throwing', () => {
-      setupContextMenu();
-    });
-
-    it('handles context menu click and adds streamer from page URL', async () => {
-      await handleContextMenuClick(
-        { menuItemId: 'track_kick_creator', pageUrl: 'https://kick.com/xqc' },
-        {},
-      );
-      const streamer = await getStreamer('xqc');
-      expect(streamer).not.toBeNull();
-      expect(streamer.slug).toBe('xqc');
-    });
-
-    it('ignores non-channel context menu targets', async () => {
-      await handleContextMenuClick(
-        { menuItemId: 'track_kick_creator', pageUrl: 'https://kick.com/categories' },
-        {},
-      );
-      const streamer = await getStreamer('categories');
-      expect(streamer).toBeNull();
+  describe('cloud sync', () => {
+    it('syncs missing streamers from cloud sync on startup', async () => {
+      await chromeMock.storage.sync.set({ watchlist: ['xqc', 'tarik'] });
+      await onExtensionStartup();
+      const xqc = await getStreamer('xqc');
+      expect(xqc).not.toBeNull();
     });
   });
 });

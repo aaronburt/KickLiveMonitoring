@@ -14,6 +14,7 @@ import {
   formatStreamDuration,
   escapeHtml,
 } from '../utils/formatters.js';
+import { validateSlug } from '../utils/slugValidator.js';
 import { searchChannels } from '../services/kickApi.js';
 
 const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%238A939B%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M4%2020c0-4%204-6%208-6s8%202%208%206%22%2F%3E%3C%2Fsvg%3E';
@@ -339,6 +340,24 @@ function bindEvents() {
   });
 }
 
+export function checkActiveKickTab() {
+  if (typeof chrome === 'undefined' || !chrome.tabs?.query) return;
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const activeUrl = tabs?.[0]?.url;
+    if (!activeUrl || !activeUrl.includes('kick.com')) return;
+
+    const validation = validateSlug(activeUrl);
+    const reserved = ['categories', 'following', 'browse', 'privacy', 'terms', 'community-guidelines', 'video', 'search'];
+    if (!validation.isValid || reserved.includes(validation.slug)) return;
+
+    const isAlreadyTracked = Boolean(state.streamers[validation.slug]);
+    const input = document.getElementById('streamerInput');
+    if (input && !isAlreadyTracked && !input.value) {
+      input.value = validation.slug;
+    }
+  });
+}
+
 export async function init() {
   const [streamers, settings] = await Promise.all([getStreamers(), getSettings()]);
   state.streamers = streamers;
@@ -356,6 +375,7 @@ export async function init() {
   renderList();
   updateCounters();
   bindEvents();
+  checkActiveKickTab();
 
   setInterval(() => {
     const list = Object.values(state.streamers);

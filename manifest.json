@@ -28,8 +28,8 @@
     "type": "module"
   },
   "permissions": [
+    "activeTab",
     "alarms",
-    "contextMenus",
     "notifications",
     "storage"
   ],

@@ -87,56 +87,6 @@ export function handleRuntimeMessage(message, sender, sendResponse) {
   return false;
 }
 
-export function setupContextMenu() {
-  if (typeof chrome === 'undefined' || !chrome.contextMenus) return;
-  try {
-    chrome.contextMenus.removeAll(() => {
-      chrome.contextMenus.create({
-        id: 'track_kick_creator',
-        title: 'Track this creator on Kick Monitor',
-        contexts: ['page', 'link'],
-        documentUrlPatterns: ['https://kick.com/*'],
-        targetUrlPatterns: ['https://kick.com/*'],
-      });
-    });
-  } catch {}
-}
-
-export async function handleContextMenuClick(info, tab) {
-  if (info.menuItemId !== 'track_kick_creator') return;
-  const targetUrl = info.linkUrl || info.pageUrl || tab?.url;
-  if (!targetUrl) return;
-
-  const validation = validateSlug(targetUrl);
-  if (!validation.isValid) return;
-
-  const reservedPaths = ['categories', 'following', 'browse', 'privacy', 'terms', 'community-guidelines', 'video'];
-  if (reservedPaths.includes(validation.slug)) return;
-
-  const result = await addNewStreamer(validation.slug);
-  const iconUrl = typeof chrome.runtime?.getURL === 'function'
-    ? chrome.runtime.getURL('assets/icons/icon-128.png')
-    : 'assets/icons/icon-128.png';
-
-  if (result.success) {
-    chrome.notifications?.create?.(`tracked_${validation.slug}_${Date.now()}`, {
-      type: 'basic',
-      iconUrl,
-      title: 'Creator Tracked!',
-      message: `Added ${result.streamer?.username || validation.slug} to your Kick Monitor watchlist.`,
-      priority: 1,
-    });
-  } else if (result.error) {
-    chrome.notifications?.create?.(`track_err_${Date.now()}`, {
-      type: 'basic',
-      iconUrl,
-      title: 'Kick Monitor',
-      message: result.error,
-      priority: 1,
-    });
-  }
-}
-
 export async function syncCloudWatchlist() {
   const syncedSlugs = await getSyncedWatchlist();
   const localStreamers = await getStreamers();
@@ -148,7 +98,6 @@ export async function syncCloudWatchlist() {
 }
 
 export async function onExtensionStartup() {
-  setupContextMenu();
   await initializeAlarms();
   await syncCloudWatchlist();
   const streamers = await getStreamers();
@@ -157,7 +106,6 @@ export async function onExtensionStartup() {
 }
 
 export async function onExtensionInstalled() {
-  setupContextMenu();
   await initializeAlarms();
   await syncCloudWatchlist();
   const streamers = await getStreamers();
@@ -169,6 +117,5 @@ if (typeof chrome !== 'undefined') {
   chrome.runtime?.onStartup?.addListener(onExtensionStartup);
   chrome.alarms?.onAlarm?.addListener(handleAlarm);
   chrome.notifications?.onClicked?.addListener(handleNotificationClick);
-  chrome.contextMenus?.onClicked?.addListener(handleContextMenuClick);
   chrome.runtime?.onMessage?.addListener(handleRuntimeMessage);
 }
