@@ -28,18 +28,15 @@
 }
 
 html {
-  width: 100%;
-  height: 100%;
   margin: 0;
   padding: 0;
   background-color: var(--bg-primary);
 }
 
 body {
-  width: 100%;
-  min-width: 380px;
-  min-height: 480px;
-  height: 100%;
+  width: 380px;
+  min-height: auto;
+  max-height: 580px;
   margin: 0;
   padding: 0;
   background-color: var(--bg-primary);
@@ -47,7 +44,8 @@ body {
   font-family: var(--font-family);
   font-size: 13px;
   line-height: 1.4;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: auto;
   user-select: none;
 }
 
@@ -55,9 +53,22 @@ body {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100vh;
+  max-height: 580px;
   box-sizing: border-box;
+}
+
+/* Standalone Popout Window Mode */
+body.popout-mode {
+  width: 100%;
+  min-width: 320px;
+  height: 100vh;
+  max-height: none;
   overflow: hidden;
+}
+
+body.popout-mode .app-container {
+  height: 100vh;
+  max-height: none;
 }
 
 .header {
@@ -509,12 +520,17 @@ input:checked + .toggle-slider:before {
 }
 
 .streamers-container {
-  flex: 1;
+  max-height: 380px;
   overflow-y: auto;
   padding: 10px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+body.popout-mode .streamers-container {
+  max-height: none;
+  flex: 1;
 }
 
 .streamers-container::-webkit-scrollbar {

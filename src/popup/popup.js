@@ -450,7 +450,8 @@ export async function init() {
   bindEvents();
   checkActiveKickTab();
 
-  if (typeof window !== 'undefined' && (window.location?.search?.includes('popout=1') || window.innerWidth > 400)) {
+  const isPopout = Boolean(typeof window !== 'undefined' && (window.location?.search?.includes('popout=1') || window.opener));
+  if (isPopout) {
     document.body.classList.add('popout-mode');
     document.getElementById('popoutButton')?.classList.add('hidden');
   }
