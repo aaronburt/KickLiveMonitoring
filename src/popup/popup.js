@@ -263,6 +263,26 @@ function bindEvents() {
     });
   });
 
+  document.getElementById('popoutButton')?.addEventListener('click', () => {
+    const url = typeof chrome !== 'undefined' && chrome.runtime?.getURL
+      ? chrome.runtime.getURL('src/popup/index.html?popout=1')
+      : 'index.html?popout=1';
+
+    if (typeof chrome !== 'undefined' && chrome.windows?.create) {
+      chrome.windows.create({
+        url,
+        type: 'popup',
+        width: 380,
+        height: 600,
+        focused: true,
+      });
+      window.close?.();
+    } else {
+      window.open(url, 'KickMonitorPopout', 'width=380,height=600,menubar=no,toolbar=no,location=no');
+      window.close?.();
+    }
+  });
+
   document.getElementById('refreshButton')?.addEventListener('click', async () => {
     if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
       await new Promise((r) => chrome.runtime.sendMessage({ type: 'REFRESH_ALL' }, r));
@@ -404,6 +424,10 @@ export async function init() {
   updateCounters();
   bindEvents();
   checkActiveKickTab();
+
+  if (typeof window !== 'undefined' && window.location?.search?.includes('popout=1')) {
+    document.getElementById('popoutButton')?.classList.add('hidden');
+  }
 
   setInterval(() => {
     const list = Object.values(state.streamers);
