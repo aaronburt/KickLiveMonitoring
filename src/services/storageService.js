@@ -24,6 +24,36 @@ function getStorage() {
   };
 }
 
+function getSyncStorage() {
+  if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
+    return chrome.storage.sync;
+  }
+  return null;
+}
+
+export async function syncWatchlistToCloud(streamersMap) {
+  const sync = getSyncStorage();
+  if (!sync) return;
+  const watchlist = Object.keys(streamersMap || {});
+  try {
+    sync.set({ watchlist });
+  } catch {}
+}
+
+export async function getSyncedWatchlist() {
+  const sync = getSyncStorage();
+  if (!sync) return [];
+  return new Promise((resolve) => {
+    try {
+      sync.get(['watchlist'], (result) => {
+        resolve(Array.isArray(result?.watchlist) ? result.watchlist : []);
+      });
+    } catch {
+      resolve([]);
+    }
+  });
+}
+
 export async function getStreamers() {
   return new Promise((resolve) => {
     getStorage().get(['streamers'], (result) => {
@@ -45,6 +75,7 @@ export async function setStreamer(rawSlug, streamerData) {
   return enqueue(async () => {
     const streamers = await getStreamers();
     streamers[slug] = { ...streamerData, slug };
+    await syncWatchlistToCloud(streamers);
     return new Promise((resolve) => {
       getStorage().set({ streamers }, () => resolve());
     });
@@ -53,6 +84,7 @@ export async function setStreamer(rawSlug, streamerData) {
 
 export async function saveAllStreamers(streamersMap) {
   return enqueue(async () => {
+    await syncWatchlistToCloud(streamersMap);
     return new Promise((resolve) => {
       getStorage().set({ streamers: streamersMap || {} }, () => resolve());
     });
@@ -65,6 +97,7 @@ export async function removeStreamer(rawSlug) {
   return enqueue(async () => {
     const streamers = await getStreamers();
     delete streamers[slug];
+    await syncWatchlistToCloud(streamers);
     return new Promise((resolve) => {
       getStorage().set({ streamers }, () => resolve());
     });
@@ -83,6 +116,12 @@ export async function updateSettings(partialSettings) {
   return enqueue(async () => {
     const current = await getSettings();
     const updated = { ...current, ...(partialSettings || {}) };
+    const sync = getSyncStorage();
+    if (sync) {
+      try {
+        sync.set({ settings: updated });
+      } catch {}
+    }
     return new Promise((resolve) => {
       getStorage().set({ settings: updated }, () => resolve(updated));
     });
@@ -91,6 +130,12 @@ export async function updateSettings(partialSettings) {
 
 export async function clearStorage() {
   return enqueue(async () => {
+    const sync = getSyncStorage();
+    if (sync) {
+      try {
+        sync.clear?.();
+      } catch {}
+    }
     return new Promise((resolve) => {
       getStorage().clear(() => resolve());
     });

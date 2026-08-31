@@ -8,6 +8,7 @@ import {
   getSettings,
   updateSettings,
   clearStorage,
+  getSyncedWatchlist,
   DEFAULT_SETTINGS,
 } from '../src/services/storageService.js';
 
@@ -76,5 +77,19 @@ describe('storageService', () => {
 
     const streamers = await getStreamers();
     expect(Object.keys(streamers).length).toBe(0);
+  });
+
+  it('syncs watchlist slugs to cloud sync storage', async () => {
+    await setStreamer('xqc', { slug: 'xqc', username: 'xQc' });
+    await setStreamer('ratedepicz', { slug: 'ratedepicz', username: 'RatedEpicz' });
+
+    const synced = await getSyncedWatchlist();
+    expect(synced).toContain('xqc');
+    expect(synced).toContain('ratedepicz');
+
+    await removeStreamer('xqc');
+    const updatedSynced = await getSyncedWatchlist();
+    expect(updatedSynced).not.toContain('xqc');
+    expect(updatedSynced).toContain('ratedepicz');
   });
 });

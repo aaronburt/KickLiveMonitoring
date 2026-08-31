@@ -34,6 +34,7 @@ export function createChromeMock() {
 
   const onAlarm = createEventDispatcher();
   const onNotificationClicked = createEventDispatcher();
+  const onContextMenuClicked = createEventDispatcher();
   const onInstalled = createEventDispatcher();
   const onStartup = createEventDispatcher();
   const onMessage = createEventDispatcher();
@@ -96,6 +97,29 @@ export function createChromeMock() {
           return Promise.resolve();
         },
       },
+      sync: {
+        get(keys, callback) {
+          return mock.storage.local.get(keys, callback);
+        },
+        set(items, callback) {
+          return mock.storage.local.set(items, callback);
+        },
+        remove(keys, callback) {
+          return mock.storage.local.remove(keys, callback);
+        },
+        clear(callback) {
+          return mock.storage.local.clear(callback);
+        },
+      },
+    },
+    contextMenus: {
+      create(props, callback) {
+        if (typeof callback === 'function') callback();
+      },
+      removeAll(callback) {
+        if (typeof callback === 'function') callback();
+      },
+      onClicked: onContextMenuClicked,
     },
     alarms: {
       create(name, alarmInfo) {
