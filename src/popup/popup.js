@@ -54,10 +54,29 @@ function renderList() {
   if (!container) return;
 
   const list = Object.values(state.streamers);
+  const sortBy = state.settings?.sortBy || 'viewers';
   const filtered = list.filter((s) => {
     if (state.filter === 'live') return s.isLive;
     if (state.filter === 'offline') return !s.isLive;
     return true;
+  }).sort((a, b) => {
+    if (a.isLive !== b.isLive) return a.isLive ? -1 : 1;
+    if (sortBy === 'alphabetical') {
+      return (a.username || a.slug).localeCompare(b.username || b.slug);
+    }
+    if (sortBy === 'uptime') {
+      const aStart = a.startedAt ? new Date(a.startedAt).getTime() : 0;
+      const bStart = b.startedAt ? new Date(b.startedAt).getTime() : 0;
+      return aStart - bStart;
+    }
+    if (sortBy === 'recent') {
+      return (b.lastCheckedAt || 0) - (a.lastCheckedAt || 0);
+    }
+    if (a.isLive && b.isLive) {
+      const diff = (b.viewerCount || 0) - (a.viewerCount || 0);
+      if (diff !== 0) return diff;
+    }
+    return (a.username || a.slug).localeCompare(b.username || b.slug);
   });
 
   if (filtered.length === 0) {
@@ -271,6 +290,13 @@ function bindEvents() {
     chrome?.runtime?.sendMessage?.({ type: 'UPDATE_SETTINGS', payload: { checkIntervalMinutes: mins } });
   });
 
+  document.getElementById('sortBySelect')?.addEventListener('change', async (e) => {
+    const val = e.target.value;
+    state.settings.sortBy = val;
+    await updateSettings({ sortBy: val });
+    renderList();
+  });
+
   document.getElementById('notificationsToggle')?.addEventListener('change', async (e) => {
     await updateSettings({ notificationsEnabled: e.target.checked });
   });
@@ -365,6 +391,8 @@ export async function init() {
 
   const intSelect = document.getElementById('checkIntervalSelect');
   if (intSelect && settings.checkIntervalMinutes) intSelect.value = String(settings.checkIntervalMinutes);
+  const sortSelect = document.getElementById('sortBySelect');
+  if (sortSelect && settings.sortBy) sortSelect.value = settings.sortBy;
   const notifToggle = document.getElementById('notificationsToggle');
   if (notifToggle) notifToggle.checked = Boolean(settings.notificationsEnabled);
   const soundToggle = document.getElementById('soundToggle');

@@ -3,6 +3,7 @@ export const DEFAULT_SETTINGS = {
   notificationsEnabled: true,
   soundEnabled: false,
   debugLogging: false,
+  sortBy: 'viewers',
 };
 
 let writeQueue = Promise.resolve();
