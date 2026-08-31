@@ -4,6 +4,7 @@ export const DEFAULT_SETTINGS = {
   soundEnabled: false,
   debugLogging: false,
   sortBy: 'viewers',
+  uiScale: '100',
 };
 
 let writeQueue = Promise.resolve();

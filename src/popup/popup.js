@@ -325,6 +325,13 @@ function bindEvents() {
     renderList();
   });
 
+  document.getElementById('uiScaleSelect')?.addEventListener('change', async (e) => {
+    const val = e.target.value;
+    state.settings.uiScale = val;
+    applyUiScale(val);
+    await updateSettings({ uiScale: val });
+  });
+
   document.getElementById('notificationsToggle')?.addEventListener('change', async (e) => {
     await updateSettings({ notificationsEnabled: e.target.checked });
   });
@@ -412,6 +419,13 @@ export function checkActiveKickTab() {
   });
 }
 
+export function applyUiScale(scale) {
+  if (typeof document === 'undefined') return;
+  const num = Number(scale) || 100;
+  const zoomFactor = (num / 100).toFixed(2);
+  document.documentElement.style.zoom = zoomFactor;
+}
+
 export async function init() {
   const [streamers, settings] = await Promise.all([getStreamers(), getSettings()]);
   state.streamers = streamers;
@@ -421,6 +435,8 @@ export async function init() {
   if (intSelect && settings.checkIntervalMinutes) intSelect.value = String(settings.checkIntervalMinutes);
   const sortSelect = document.getElementById('sortBySelect');
   if (sortSelect && settings.sortBy) sortSelect.value = settings.sortBy;
+  const scaleSelect = document.getElementById('uiScaleSelect');
+  if (scaleSelect && settings.uiScale) scaleSelect.value = String(settings.uiScale);
   const notifToggle = document.getElementById('notificationsToggle');
   if (notifToggle) notifToggle.checked = Boolean(settings.notificationsEnabled);
   const soundToggle = document.getElementById('soundToggle');
@@ -428,6 +444,7 @@ export async function init() {
   const debugToggle = document.getElementById('debugLoggingToggle');
   if (debugToggle) debugToggle.checked = Boolean(settings.debugLogging);
 
+  applyUiScale(settings.uiScale || '100');
   renderList();
   updateCounters();
   bindEvents();
