@@ -38,7 +38,7 @@ bun test
 
 ## Disclaimer
 
-**Kick Streamer Monitor** is an independent, open-source community project and is **not** affiliated with or endorsed by Kick.com or Kick Community Pty Ltd.
+**Kick Streamer Monitor** is an independent, open-source community project and is **not** affiliated with or endorsed by Kick.com or Kick Community Pty Ltd. Built with the assistance of AI and reviewed/tested by a human developer.
 
 ---
 
