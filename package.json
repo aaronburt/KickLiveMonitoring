@@ -1,0 +1,17 @@
+{
+  "name": "kick-streamer-monitor",
+  "version": "1.0.0",
+  "description": "Google Chrome Extension (Manifest V3) to monitor Kick.com streamers and receive live notifications.",
+  "type": "module",
+  "scripts": {
+    "test": "bun test"
+  },
+  "keywords": [
+    "kick",
+    "chrome-extension",
+    "manifest-v3",
+    "streamer-monitor"
+  ],
+  "author": "",
+  "license": "MIT"
+}

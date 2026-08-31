@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kick Streamer Monitor</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 3h6v6h6V3h6v6h-6v6h6v6h-6v-6H9v6H3V3z" fill="#53FC18" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title">Kick Monitor</h1>
+          <span id="headerLiveCounter" class="live-counter-badge">0 Live</span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="refreshButton" class="icon-button" title="Refresh all streamers" aria-label="Refresh">
+          <svg class="icon-svg refresh-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
+          </svg>
+        </button>
+        <button id="settingsToggle" class="icon-button" title="Settings" aria-label="Settings">
+          <svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="settingsPanel" class="settings-panel hidden">
+      <div class="settings-header">
+        <h2 class="settings-title">Monitoring Settings</h2>
+        <button id="settingsClose" class="icon-button small" aria-label="Close settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <div class="setting-row">
+          <label for="checkIntervalSelect" class="setting-label">Poll Frequency</label>
+          <select id="checkIntervalSelect" class="select-input">
+            <option value="1">Every 1 minute</option>
+            <option value="2">Every 2 minutes</option>
+            <option value="5">Every 5 minutes</option>
+            <option value="10">Every 10 minutes</option>
+            <option value="15">Every 15 minutes</option>
+          </select>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Desktop Notifications</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="notificationsToggle" checked>
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Notification Sound</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="soundToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Debug Logging</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="debugLoggingToggle">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+        <div class="setting-row">
+          <span class="setting-label">Test Notification</span>
+          <button type="button" id="debugLiveNotifBtn" class="setting-btn">Test</button>
+        </div>
+      </div>
+    </div>
+
+    <form id="addStreamerForm" class="add-form">
+      <div class="input-group">
+        <div class="input-wrapper">
+          <input
+            type="text"
+            id="streamerInput"
+            class="text-input"
+            placeholder="Enter Kick username or URL"
+            autocomplete="off"
+            spellcheck="false"
+            required
+          >
+          <div id="searchDropdown" class="search-dropdown hidden"></div>
+        </div>
+        <button type="submit" id="addStreamerButton" class="button-primary">
+          <span class="button-text">Track</span>
+          <span class="button-spinner hidden"></span>
+        </button>
+      </div>
+      <div id="formFeedback" class="feedback-banner hidden" role="alert"></div>
+    </form>
+
+    <nav class="filter-nav" aria-label="Streamer filters">
+      <button class="filter-tab active" data-filter="all" id="filterAll">
+        All <span class="filter-count" id="countAll">0</span>
+      </button>
+      <button class="filter-tab" data-filter="live" id="filterLive">
+        Live <span class="filter-count live-pill" id="countLive">0</span>
+      </button>
+      <button class="filter-tab" data-filter="offline" id="filterOffline">
+        Offline <span class="filter-count" id="countOffline">0</span>
+      </button>
+    </nav>
+
+    <main class="streamers-container" id="streamersList" aria-live="polite">
+      <div class="loading-state" id="loadingState">
+        <div class="spinner"></div>
+        <p>Loading streamers...</p>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <a href="#" id="privacyLink" class="footer-link">Privacy & Disclaimer</a>
+      <span id="lastUpdatedTime" class="footer-time"></span>
+    </footer>
+  </div>
+
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
