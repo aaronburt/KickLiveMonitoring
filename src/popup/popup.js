@@ -425,7 +425,8 @@ export async function init() {
   bindEvents();
   checkActiveKickTab();
 
-  if (typeof window !== 'undefined' && window.location?.search?.includes('popout=1')) {
+  if (typeof window !== 'undefined' && (window.location?.search?.includes('popout=1') || window.innerWidth > 400)) {
+    document.body.classList.add('popout-mode');
     document.getElementById('popoutButton')?.classList.add('hidden');
   }
 

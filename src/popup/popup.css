@@ -27,10 +27,18 @@
   padding: 0;
 }
 
+html {
+  width: 100%;
+  height: 100%;
+  background-color: var(--bg-primary);
+}
+
 body {
   width: 380px;
   min-height: 480px;
-  max-height: 580px;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
   background-color: var(--bg-primary);
   color: var(--text-primary);
   font-family: var(--font-family);
@@ -40,11 +48,22 @@ body {
   user-select: none;
 }
 
+body.popout-mode,
+@media screen and (min-width: 381px) {
+  body {
+    width: 100%;
+    min-width: 300px;
+    height: 100vh;
+    max-height: none;
+  }
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
+  width: 100%;
   height: 100vh;
-  max-height: 580px;
+  overflow: hidden;
 }
 
 .header {
