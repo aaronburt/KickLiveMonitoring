@@ -55,6 +55,18 @@ describe('notificationManager', () => {
       const notifId = await createLiveNotification(null);
       expect(notifId).toBeNull();
     });
+
+    it('handles notification creation runtime error gracefully', async () => {
+      chromeMock.notifications.create = (id, options, callback) => {
+        chromeMock.runtime.lastError = { message: 'Notification quota exceeded' };
+        callback?.(null);
+        chromeMock.runtime.lastError = null;
+      };
+
+      const streamer = { slug: 'xqc', username: 'xQc' };
+      const notifId = await createLiveNotification(streamer);
+      expect(notifId).toBeNull();
+    });
   });
 
   describe('handleNotificationClick', () => {

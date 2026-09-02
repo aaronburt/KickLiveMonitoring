@@ -37,11 +37,12 @@ describe('slugValidator', () => {
       expect(normalizeSlug('www.kick.com/xqc/about')).toBe('xqc');
     });
 
-    it('returns empty string for invalid inputs', () => {
+    it('returns empty string for invalid inputs or malformed URLs', () => {
       expect(normalizeSlug('')).toBe('');
       expect(normalizeSlug(null)).toBe('');
       expect(normalizeSlug(undefined)).toBe('');
       expect(normalizeSlug(123)).toBe('');
+      expect(normalizeSlug('https://%%invalid-url%%')).toBe('');
     });
   });
 

@@ -46,6 +46,11 @@ describe('serviceWorker', () => {
       const alarm = await chromeMock.alarms.get(POLL_ALARM_NAME);
       expect(alarm).not.toBeNull();
     });
+
+    it('registers all service worker listeners safely', async () => {
+      const { registerServiceWorkerListeners } = await import('../src/background/serviceWorker.js');
+      expect(() => registerServiceWorkerListeners()).not.toThrow();
+    });
   });
 
   describe('runtime message handling', () => {
@@ -159,6 +164,22 @@ describe('serviceWorker', () => {
       expect(responseResult.id).toBeDefined();
       const notifs = await chromeMock.notifications.getAll();
       expect(Object.keys(notifs).length).toBe(1);
+    });
+
+    it('handles GET_CIRCUIT_STATUS and RESET_CIRCUIT messages', () => {
+      let statusResponse = null;
+      handleRuntimeMessage({ type: MESSAGE_TYPES.GET_CIRCUIT_STATUS }, {}, (res) => {
+        statusResponse = res;
+      });
+      expect(statusResponse.success).toBe(true);
+      expect(statusResponse.data.state).toBe('CLOSED');
+
+      let resetResponse = null;
+      handleRuntimeMessage({ type: MESSAGE_TYPES.RESET_CIRCUIT }, {}, (res) => {
+        resetResponse = res;
+      });
+      expect(resetResponse.success).toBe(true);
+      expect(resetResponse.data.state).toBe('CLOSED');
     });
 
     it('returns false for unknown messages', () => {

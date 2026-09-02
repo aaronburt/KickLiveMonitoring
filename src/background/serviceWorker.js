@@ -139,11 +139,15 @@ export async function onStorageChange(changes, areaName) {
   }
 }
 
-if (typeof chrome !== 'undefined') {
-  chrome.runtime?.onInstalled?.addListener(onExtensionInstalled);
-  chrome.runtime?.onStartup?.addListener(onExtensionStartup);
-  chrome.alarms?.onAlarm?.addListener(handleAlarm);
-  chrome.notifications?.onClicked?.addListener(handleNotificationClick);
-  chrome.runtime?.onMessage?.addListener(handleRuntimeMessage);
-  chrome.storage?.onChanged?.addListener(onStorageChange);
+export function registerServiceWorkerListeners() {
+  if (typeof chrome !== 'undefined') {
+    chrome.runtime?.onInstalled?.addListener(onExtensionInstalled);
+    chrome.runtime?.onStartup?.addListener(onExtensionStartup);
+    chrome.alarms?.onAlarm?.addListener(handleAlarm);
+    chrome.notifications?.onClicked?.addListener(handleNotificationClick);
+    chrome.runtime?.onMessage?.addListener(handleRuntimeMessage);
+    chrome.storage?.onChanged?.addListener(onStorageChange);
+  }
 }
+
+registerServiceWorkerListeners();

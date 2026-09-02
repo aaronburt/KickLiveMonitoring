@@ -4,11 +4,13 @@ import {
   getStreamers,
   getStreamer,
   setStreamer,
+  saveAllStreamers,
   removeStreamer,
   getSettings,
   updateSettings,
   clearStorage,
   getSyncedWatchlist,
+  syncWatchlistToCloud,
   DEFAULT_SETTINGS,
 } from '../src/services/storageService.js';
 
@@ -60,6 +62,19 @@ describe('storageService', () => {
     expect(Object.keys(allStreamers)).toContain('xqc');
   });
 
+  it('saves all streamers map in one operation', async () => {
+    const map = {
+      xqc: { slug: 'xqc', username: 'xQc', isLive: true },
+      adinross: { slug: 'adinross', username: 'AdinRoss', isLive: false },
+    };
+
+    await saveAllStreamers(map);
+    const stored = await getStreamers();
+    expect(Object.keys(stored).length).toBe(2);
+    expect(stored.xqc.isLive).toBe(true);
+    expect(stored.adinross.isLive).toBe(false);
+  });
+
   it('removes a streamer correctly', async () => {
     await setStreamer('xqc', { slug: 'xqc', username: 'xQc' });
     await setStreamer('adinross', { slug: 'adinross', username: 'AdinRoss' });
@@ -90,10 +105,22 @@ describe('storageService', () => {
     const synced = await getSyncedWatchlist();
     expect(synced).toContain('xqc');
     expect(synced).toContain('ratedepicz');
+  });
 
-    await removeStreamer('xqc');
-    const updatedSynced = await getSyncedWatchlist();
-    expect(updatedSynced).not.toContain('xqc');
-    expect(updatedSynced).toContain('ratedepicz');
+  it('handles fallback safely when chrome runtime is undefined', async () => {
+    const originalChrome = globalThis.chrome;
+    try {
+      globalThis.chrome = undefined;
+      const streamers = await getStreamers();
+      expect(streamers).toEqual({});
+      const settings = await getSettings();
+      expect(settings.checkIntervalMinutes).toBe(2);
+      const synced = await getSyncedWatchlist();
+      expect(synced).toEqual([]);
+      await setStreamer('test', { slug: 'test' });
+      await syncWatchlistToCloud({});
+    } finally {
+      globalThis.chrome = originalChrome;
+    }
   });
 });

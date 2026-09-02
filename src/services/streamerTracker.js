@@ -82,13 +82,7 @@ export async function checkAllStreamers(options = {}) {
   }
 
   const [canarySlug, ...remainingSlugs] = slugs;
-  let canaryResult;
-  try {
-    canaryResult = await checkStreamerStatus(canarySlug, options);
-  } catch (err) {
-    recordFailure(err instanceof Error ? err.message : 'Canary request failed');
-    return { updated: [], newLive: [], canaryFailed: true };
-  }
+  const canaryResult = await checkStreamerStatus(canarySlug, options);
 
   if (canaryResult?.streamer?.error && isSystemicApiError(canaryResult.streamer.error)) {
     recordFailure(canaryResult.streamer.error);

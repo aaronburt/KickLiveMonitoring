@@ -87,6 +87,22 @@ describe('circuitBreaker', () => {
     expect(canExecute()).toBe(true);
   });
 
+  it('transitions to HALF_OPEN when cooldown expires and allows probe request', () => {
+    for (let i = 0; i < FAILURE_THRESHOLD; i += 1) {
+      recordFailure('Cloudflare 403');
+    }
+    expect(canExecute()).toBe(false);
+
+    const originalNow = Date.now;
+    try {
+      Date.now = () => originalNow() + BACKOFF_INTERVALS_MS[0] + 1000;
+      expect(canExecute()).toBe(true);
+      expect(getCircuitStatus().state).toBe(CIRCUIT_STATES.HALF_OPEN);
+    } finally {
+      Date.now = originalNow;
+    }
+  });
+
   it('correctly classifies systemic API errors versus channel-specific errors', () => {
     expect(isSystemicApiError('Access forbidden / Cloudflare challenge (403)')).toBe(true);
     expect(isSystemicApiError('Rate limit exceeded (429)')).toBe(true);

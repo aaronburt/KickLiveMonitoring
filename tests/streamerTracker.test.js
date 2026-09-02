@@ -188,6 +188,18 @@ describe('streamerTracker', () => {
       expect(result.success).toBe(false);
       expect(result.error).toContain('not found');
     });
+
+    it('rejects when channel fetch encounters systemic 403 Cloudflare challenge', async () => {
+      const mockFetch403 = async () => ({
+        ok: false,
+        status: 403,
+        json: async () => ({}),
+      });
+
+      const result = await addNewStreamer('tarik', { fetchFn: mockFetch403 });
+      expect(result.success).toBe(false);
+      expect(result.error).toContain('403');
+    });
   });
 
   describe('removeTrackedStreamer', () => {
