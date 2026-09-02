@@ -798,6 +798,53 @@ body.popout-mode .streamers-container {
   text-decoration: underline;
 }
 
+.circuit-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 170, 0, 0.12);
+  border-bottom: 1px solid rgba(255, 170, 0, 0.3);
+  padding: 8px 16px;
+  gap: 10px;
+}
+
+.circuit-banner-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.circuit-banner-icon {
+  color: #FFAA00;
+  flex-shrink: 0;
+}
+
+.circuit-banner-text {
+  font-size: 11px;
+  color: #FFCC66;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.circuit-retry-btn {
+  background-color: rgba(255, 170, 0, 0.2);
+  border: 1px solid rgba(255, 170, 0, 0.4);
+  color: #FFAA00;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.circuit-retry-btn:hover {
+  background-color: rgba(255, 170, 0, 0.3);
+  color: #FFFFFF;
+}
+
 .hidden {
   display: none !important;
 }

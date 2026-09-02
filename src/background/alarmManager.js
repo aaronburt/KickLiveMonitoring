@@ -32,14 +32,6 @@ export async function handleAlarm(alarm) {
   }
 }
 
-export function setupAlarmListeners() {
-  if (typeof chrome !== 'undefined' && chrome.alarms?.onAlarm) {
-    if (!chrome.alarms.onAlarm.hasListener?.(handleAlarm)) {
-      chrome.alarms.onAlarm.addListener(handleAlarm);
-    }
-  }
-}
-
 export async function initializeAlarms() {
   const settings = await getSettings();
   await createPollAlarm(settings.checkIntervalMinutes);

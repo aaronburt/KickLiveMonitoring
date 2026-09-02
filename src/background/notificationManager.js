@@ -48,11 +48,3 @@ export function handleNotificationClick(notificationId) {
   chrome?.tabs?.create?.({ url: `https://kick.com/${slug}`, active: true });
   chrome?.notifications?.clear?.(notificationId);
 }
-
-export function setupNotificationListeners() {
-  if (typeof chrome !== 'undefined' && chrome.notifications?.onClicked) {
-    if (!chrome.notifications.onClicked.hasListener?.(handleNotificationClick)) {
-      chrome.notifications.onClicked.addListener(handleNotificationClick);
-    }
-  }
-}

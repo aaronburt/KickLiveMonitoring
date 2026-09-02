@@ -4,6 +4,10 @@ import {
   checkAllStreamers,
 } from '../services/streamerTracker.js';
 import {
+  getCircuitStatus,
+  resetCircuit,
+} from '../services/circuitBreaker.js';
+import {
   getStreamers,
   getSettings,
   updateSettings,
@@ -195,10 +199,27 @@ function renderList() {
   }
 }
 
+export function updateCircuitBanner() {
+  const banner = document.getElementById('circuitBanner');
+  const text = document.getElementById('circuitBannerText');
+  if (!banner || !text) return;
+
+  const status = getCircuitStatus();
+  if (status.state === 'OPEN') {
+    const remainingSeconds = Math.max(0, Math.ceil((status.cooldownUntil - Date.now()) / 1000));
+    const remainingMinutes = Math.max(1, Math.ceil(remainingSeconds / 60));
+    text.textContent = `Kick API throttled or unreachable. Polling paused (${remainingMinutes}m left).`;
+    banner.classList.remove('hidden');
+  } else {
+    banner.classList.add('hidden');
+  }
+}
+
 async function refreshData() {
   state.streamers = await getStreamers();
   renderList();
   updateCounters();
+  updateCircuitBanner();
 }
 
 function bindEvents() {
@@ -332,11 +353,23 @@ function bindEvents() {
     }
   });
 
+  document.getElementById('circuitRetryBtn')?.addEventListener('click', async () => {
+    resetCircuit();
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      await new Promise((r) => chrome.runtime.sendMessage({ type: 'REFRESH_ALL' }, r));
+    } else {
+      await checkAllStreamers({ bypassCircuitBreaker: true });
+    }
+    await refreshData();
+    showFeedback('Retried connection to Kick API', 'success');
+  });
+
   document.getElementById('refreshButton')?.addEventListener('click', async () => {
     if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
       await new Promise((r) => chrome.runtime.sendMessage({ type: 'REFRESH_ALL' }, r));
     } else {
-      await checkAllStreamers();
+      resetCircuit();
+      await checkAllStreamers({ bypassCircuitBreaker: true });
     }
     await refreshData();
     const timeEl = document.getElementById('lastUpdatedTime');

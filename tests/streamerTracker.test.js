@@ -239,6 +239,57 @@ describe('streamerTracker', () => {
       expect(chromeMock.action.getBadgeText()).toBe('2');
     });
 
+    it('aborts polling remaining streamers when canary request encounters a systemic API failure', async () => {
+      await setStreamer('streamer1', { slug: 'streamer1', isLive: false });
+      await setStreamer('streamer2', { slug: 'streamer2', isLive: false });
+
+      let fetchCallCount = 0;
+      const mockFetch = async () => {
+        fetchCallCount += 1;
+        return {
+          ok: false,
+          status: 403,
+          json: async () => ({}),
+        };
+      };
+
+      const result = await checkAllStreamers({ fetchFn: mockFetch });
+      expect(result.canaryFailed).toBe(true);
+      expect(fetchCallCount).toBe(1);
+    });
+
+    it('suppresses polling when circuit breaker is tripped unless bypassed', async () => {
+      await setStreamer('streamer1', { slug: 'streamer1', isLive: false });
+
+      const mockFetch403 = async () => ({
+        ok: false,
+        status: 403,
+        json: async () => ({}),
+      });
+
+      await checkAllStreamers({ fetchFn: mockFetch403 });
+      await checkAllStreamers({ fetchFn: mockFetch403 });
+      await checkAllStreamers({ fetchFn: mockFetch403 });
+
+      let fetchCalled = false;
+      const mockFetchNormal = async () => {
+        fetchCalled = true;
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ slug: 'streamer1', user: { username: 'Streamer1' } }),
+        };
+      };
+
+      const suppressedResult = await checkAllStreamers({ fetchFn: mockFetchNormal });
+      expect(suppressedResult.circuitTripped).toBe(true);
+      expect(fetchCalled).toBe(false);
+
+      const bypassResult = await checkAllStreamers({ fetchFn: mockFetchNormal, bypassCircuitBreaker: true });
+      expect(bypassResult.circuitTripped).toBeUndefined();
+      expect(fetchCalled).toBe(true);
+    });
+
     it('returns empty lists when no streamers are tracked', async () => {
       const result = await checkAllStreamers();
       expect(result.updated.length).toBe(0);

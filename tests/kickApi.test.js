@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'bun:test';
-import { fetchChannelData, searchChannels } from '../src/services/kickApi.js';
+import {
+  fetchChannelData,
+  searchChannels,
+  validateKickChannelSchema,
+  validateKickSearchSchema,
+  verifyApiHealth,
+} from '../src/services/kickApi.js';
 
 describe('kickApi', () => {
   it('returns fallback error when slug is empty', async () => {
@@ -78,6 +84,19 @@ describe('kickApi', () => {
     expect(result.error).toBeNull();
   });
 
+  it('handles 403 Cloudflare challenge cleanly', async () => {
+    const mockFetch = async () => ({
+      ok: false,
+      status: 403,
+      json: async () => ({}),
+    });
+
+    const result = await fetchChannelData('xqc', mockFetch);
+    expect(result.slug).toBe('xqc');
+    expect(result.isLive).toBe(false);
+    expect(result.error).toBe('Access forbidden / Cloudflare challenge (403)');
+  });
+
   it('handles 404 channel not found cleanly', async () => {
     const mockFetch = async () => ({
       ok: false,
@@ -103,6 +122,18 @@ describe('kickApi', () => {
     expect(result.error).toBe('Rate limit exceeded (429)');
   });
 
+  it('handles invalid response schema by returning fallback with schema error', async () => {
+    const mockFetch = async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ unexpected_key: 12345 }),
+    });
+
+    const result = await fetchChannelData('xqc', mockFetch);
+    expect(result.slug).toBe('xqc');
+    expect(result.error).toBe('Invalid schema: Unrecognized Kick API response');
+  });
+
   it('handles network failure cleanly without throwing unhandled exceptions', async () => {
     const mockFetch = async () => {
       throw new Error('Connection refused');
@@ -112,6 +143,56 @@ describe('kickApi', () => {
     expect(result.slug).toBe('xqc');
     expect(result.isLive).toBe(false);
     expect(result.error).toBe('Connection refused');
+  });
+
+  describe('schema validation helpers', () => {
+    it('validates correct channel schemas', () => {
+      expect(validateKickChannelSchema({ slug: 'xqc', user: { username: 'xQc' } })).toBe(true);
+      expect(validateKickChannelSchema({ slug: 'shroud' })).toBe(true);
+    });
+
+    it('rejects invalid or empty channel schemas', () => {
+      expect(validateKickChannelSchema(null)).toBe(false);
+      expect(validateKickChannelSchema(undefined)).toBe(false);
+      expect(validateKickChannelSchema([])).toBe(false);
+      expect(validateKickChannelSchema({})).toBe(false);
+      expect(validateKickChannelSchema({ error: 'Blocked' })).toBe(false);
+      expect(validateKickChannelSchema({ slug: 'xqc', user: 'invalid-string' })).toBe(false);
+    });
+
+    it('validates search response schemas', () => {
+      expect(validateKickSearchSchema({ channels: [] })).toBe(true);
+      expect(validateKickSearchSchema({ channels: [{ slug: 'xqc' }] })).toBe(true);
+      expect(validateKickSearchSchema(null)).toBe(false);
+      expect(validateKickSearchSchema({})).toBe(false);
+      expect(validateKickSearchSchema({ channels: null })).toBe(false);
+    });
+  });
+
+  describe('verifyApiHealth', () => {
+    it('reports healthy when API returns valid channel data', async () => {
+      const mockFetch = async () => ({
+        ok: true,
+        status: 200,
+        json: async () => ({ slug: 'kick', user: { username: 'Kick' } }),
+      });
+
+      const health = await verifyApiHealth('kick', mockFetch);
+      expect(health.isHealthy).toBe(true);
+      expect(health.error).toBeNull();
+    });
+
+    it('reports unhealthy when API returns 403 Cloudflare challenge', async () => {
+      const mockFetch = async () => ({
+        ok: false,
+        status: 403,
+        json: async () => ({}),
+      });
+
+      const health = await verifyApiHealth('kick', mockFetch);
+      expect(health.isHealthy).toBe(false);
+      expect(health.error).toContain('403');
+    });
   });
 
   describe('searchChannels', () => {

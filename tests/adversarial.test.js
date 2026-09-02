@@ -396,10 +396,10 @@ describe('Adversarial Stress & State Transition Rigor', () => {
   });
 
   it('tests notification click tab URL generation for slugs containing underscores', async () => {
-    const { setupNotificationListeners, extractSlugFromNotificationId } = await import(
+    const { handleNotificationClick, extractSlugFromNotificationId } = await import(
       '../src/background/notificationManager.js'
     );
-    setupNotificationListeners();
+    chrome.notifications.onClicked.addListener(handleNotificationClick);
 
     const slugWithUnderscores = 'big_streamer_99';
     const extracted = extractSlugFromNotificationId(`kick_live_${slugWithUnderscores}_123456789`);

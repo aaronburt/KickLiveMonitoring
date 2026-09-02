@@ -10,7 +10,8 @@ A lightweight Chrome Extension (Manifest V3) that tracks your favorite Kick.com 
 - **Toolbar Live Counter** — Green badge on the extension icon showing active streams.
 - **Global Search** — Search Kick channels directly with autocomplete.
 - **One-Click Watch** — Click any notification or card to open the stream.
-- **100% Local & Private** — All settings stay in your browser. Zero tracking or telemetry.
+- **100% Local & Private** — All settings stay in your browser. Zero tracking, third-party analytics, or telemetry.
+- **Smart API Protection & Circuit Breaker** — Canary pre-flight requests, strict schema verification, and automatic exponential backoff prevent rate-limiting or API hammering.
 - **Custom Polling** — Configurable check intervals (1, 2, 5, 10, 15 minutes).
 
 ---

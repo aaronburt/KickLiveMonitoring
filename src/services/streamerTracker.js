@@ -6,6 +6,14 @@ import {
   removeStreamer,
   getSettings,
 } from './storageService.js';
+import {
+  canExecute,
+  recordSuccess,
+  recordFailure,
+  resetCircuit,
+  isSystemicApiError,
+  getCircuitStatus,
+} from './circuitBreaker.js';
 import { validateSlug } from '../utils/slugValidator.js';
 import { createLiveNotification } from '../background/notificationManager.js';
 import { updateBadgeFromStreamers } from '../background/badgeManager.js';
@@ -59,6 +67,12 @@ export async function checkStreamerStatus(slug, options = {}) {
 }
 
 export async function checkAllStreamers(options = {}) {
+  if (!options.bypassCircuitBreaker && !canExecute()) {
+    const status = getCircuitStatus();
+    await logDebug('Circuit Breaker Active', `State: ${status.state}, Failures: ${status.consecutiveFailures}`);
+    return { updated: [], newLive: [], circuitTripped: true };
+  }
+
   const streamersMap = await getStreamers();
   const slugs = Object.keys(streamersMap);
 
@@ -67,18 +81,42 @@ export async function checkAllStreamers(options = {}) {
     return { updated: [], newLive: [] };
   }
 
-  const results = await Promise.allSettled(
-    slugs.map((slug) => checkStreamerStatus(slug, options)),
-  );
+  const [canarySlug, ...remainingSlugs] = slugs;
+  let canaryResult;
+  try {
+    canaryResult = await checkStreamerStatus(canarySlug, options);
+  } catch (err) {
+    recordFailure(err instanceof Error ? err.message : 'Canary request failed');
+    return { updated: [], newLive: [], canaryFailed: true };
+  }
 
-  const updated = [];
-  const newLive = [];
+  if (canaryResult?.streamer?.error && isSystemicApiError(canaryResult.streamer.error)) {
+    recordFailure(canaryResult.streamer.error);
+    const latest = await getStreamers();
+    await updateBadgeFromStreamers(latest);
+    return {
+      updated: [canaryResult.streamer],
+      newLive: canaryResult.transitionedToLive ? [canaryResult.streamer] : [],
+      canaryFailed: true,
+    };
+  }
 
-  for (const res of results) {
-    if (res.status === 'fulfilled' && res.value) {
-      updated.push(res.value.streamer);
-      if (res.value.transitionedToLive) {
-        newLive.push(res.value.streamer);
+  recordSuccess();
+
+  const updated = [canaryResult.streamer];
+  const newLive = canaryResult.transitionedToLive ? [canaryResult.streamer] : [];
+
+  if (remainingSlugs.length > 0) {
+    const results = await Promise.allSettled(
+      remainingSlugs.map((slug) => checkStreamerStatus(slug, options)),
+    );
+
+    for (const res of results) {
+      if (res.status === 'fulfilled' && res.value) {
+        updated.push(res.value.streamer);
+        if (res.value.transitionedToLive) {
+          newLive.push(res.value.streamer);
+        }
       }
     }
   }
@@ -115,6 +153,17 @@ export async function addNewStreamer(rawInput, options = {}) {
       streamer: null,
     };
   }
+
+  if (initial.error && isSystemicApiError(initial.error)) {
+    recordFailure(initial.error);
+    return {
+      success: false,
+      error: initial.error,
+      streamer: null,
+    };
+  }
+
+  recordSuccess();
 
   const record = {
     ...initial,

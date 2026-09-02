@@ -14,6 +14,10 @@ import {
   addNewStreamer,
 } from '../services/streamerTracker.js';
 import {
+  getCircuitStatus,
+  resetCircuit,
+} from '../services/circuitBreaker.js';
+import {
   getStreamers,
   updateSettings,
   getSyncedWatchlist,
@@ -27,6 +31,8 @@ export const MESSAGE_TYPES = {
   UPDATE_SETTINGS: 'UPDATE_SETTINGS',
   SYNC_BADGE: 'SYNC_BADGE',
   TRIGGER_TEST_NOTIFICATION: 'TRIGGER_TEST_NOTIFICATION',
+  GET_CIRCUIT_STATUS: 'GET_CIRCUIT_STATUS',
+  RESET_CIRCUIT: 'RESET_CIRCUIT',
 };
 
 export function handleRuntimeMessage(message, sender, sendResponse) {
@@ -35,10 +41,24 @@ export function handleRuntimeMessage(message, sender, sendResponse) {
   logDebug('Runtime Message', type, payload || '');
 
   if (type === MESSAGE_TYPES.REFRESH_ALL) {
-    checkAllStreamers()
+    resetCircuit();
+    checkAllStreamers({ bypassCircuitBreaker: true })
       .then((data) => sendResponse({ success: true, data }))
       .catch((err) => sendResponse({ success: false, error: err?.message || 'Error' }));
     return true;
+  }
+
+  if (type === MESSAGE_TYPES.GET_CIRCUIT_STATUS) {
+    const status = getCircuitStatus();
+    sendResponse({ success: true, data: status });
+    return false;
+  }
+
+  if (type === MESSAGE_TYPES.RESET_CIRCUIT) {
+    resetCircuit();
+    const status = getCircuitStatus();
+    sendResponse({ success: true, data: status });
+    return false;
   }
 
   if (type === MESSAGE_TYPES.CHECK_STREAMER) {

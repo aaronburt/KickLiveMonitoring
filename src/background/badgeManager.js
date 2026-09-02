@@ -5,11 +5,11 @@ export async function updateBadgeCount(liveCount) {
   if (typeof chrome === 'undefined' || !chrome.action) return;
   const count = Number(liveCount) || 0;
   const text = count > 0 ? String(count) : '';
-  await new Promise((resolve) => chrome.action.setBadgeText({ text }, resolve));
+  await chrome.action.setBadgeText({ text });
   if (count > 0) {
-    await new Promise((resolve) => chrome.action.setBadgeBackgroundColor({ color: KICK_BADGE_COLOR }, resolve));
+    await chrome.action.setBadgeBackgroundColor({ color: KICK_BADGE_COLOR });
     if (chrome.action.setBadgeTextColor) {
-      await new Promise((resolve) => chrome.action.setBadgeTextColor({ color: KICK_BADGE_TEXT_COLOR }, resolve));
+      await chrome.action.setBadgeTextColor({ color: KICK_BADGE_TEXT_COLOR });
     }
   }
 }
