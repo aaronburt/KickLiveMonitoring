@@ -478,7 +478,6 @@ function bindEvents() {
   };
 
   document.getElementById('privacyLink')?.addEventListener('click', openPrivacyPage);
-  document.getElementById('settingsPrivacyBtn')?.addEventListener('click', openPrivacyPage);
 }
 
 export function checkActiveKickTab() {
