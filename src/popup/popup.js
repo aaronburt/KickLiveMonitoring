@@ -542,6 +542,21 @@ export async function init() {
     document.getElementById('popoutButton')?.classList.add('hidden');
   }
 
+  if (typeof chrome !== 'undefined' && chrome.storage?.onChanged) {
+    chrome.storage.onChanged.addListener((changes, areaName) => {
+      if (areaName === 'local') {
+        if (changes.streamers) {
+          state.streamers = changes.streamers.newValue || {};
+          renderList();
+          updateCounters();
+        }
+        if (changes.settings) {
+          state.settings = { ...state.settings, ...(changes.settings.newValue || {}) };
+        }
+      }
+    });
+  }
+
   setInterval(() => {
     const list = Object.values(state.streamers);
     if (list.some((s) => s.isLive)) {

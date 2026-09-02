@@ -38,9 +38,11 @@ export function createChromeMock() {
   const onInstalled = createEventDispatcher();
   const onStartup = createEventDispatcher();
   const onMessage = createEventDispatcher();
+  const onStorageChanged = createEventDispatcher();
 
   const mock = {
     storage: {
+      onChanged: onStorageChanged,
       local: {
         get(keys, callback) {
           let result = {};
@@ -69,24 +71,33 @@ export function createChromeMock() {
           return Promise.resolve(result);
         },
         set(items, callback) {
+          const changes = {};
           if (items && typeof items === 'object') {
             for (const [key, value] of Object.entries(items)) {
-              store.set(key, JSON.parse(JSON.stringify(value)));
+              const oldValue = store.get(key);
+              const newValue = JSON.parse(JSON.stringify(value));
+              store.set(key, newValue);
+              changes[key] = { oldValue, newValue };
             }
           }
           if (typeof callback === 'function') {
             callback();
           }
+          onStorageChanged.trigger(changes, 'local');
           return Promise.resolve();
         },
         remove(keys, callback) {
+          const changes = {};
           const keysArray = Array.isArray(keys) ? keys : [keys];
           for (const key of keysArray) {
+            const oldValue = store.get(key);
             store.delete(key);
+            changes[key] = { oldValue, newValue: undefined };
           }
           if (typeof callback === 'function') {
             callback();
           }
+          onStorageChanged.trigger(changes, 'local');
           return Promise.resolve();
         },
         clear(callback) {
@@ -94,6 +105,7 @@ export function createChromeMock() {
           if (typeof callback === 'function') {
             callback();
           }
+          onStorageChanged.trigger({}, 'local');
           return Promise.resolve();
         },
       },

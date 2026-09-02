@@ -6,7 +6,7 @@ import {
   onExtensionInstalled,
   onExtensionStartup,
 } from '../src/background/serviceWorker.js';
-import { setStreamer, getStreamer, getSettings } from '../src/services/storageService.js';
+import { setStreamer, getStreamer, getSettings, updateSettings } from '../src/services/storageService.js';
 import { POLL_ALARM_NAME } from '../src/background/alarmManager.js';
 
 describe('serviceWorker', () => {
@@ -164,6 +164,38 @@ describe('serviceWorker', () => {
     it('returns false for unknown messages', () => {
       const handled = handleRuntimeMessage({ type: 'UNKNOWN_TYPE' }, {}, () => {});
       expect(handled).toBe(false);
+    });
+  });
+
+  describe('storage changes', () => {
+    it('updates badge in real time when streamers change in storage', async () => {
+      const { onStorageChange } = await import('../src/background/serviceWorker.js');
+      const changes = {
+        streamers: {
+          newValue: {
+            xqc: { slug: 'xqc', isLive: true },
+            adinross: { slug: 'adinross', isLive: true },
+          },
+        },
+      };
+
+      await onStorageChange(changes, 'local');
+      expect(chromeMock.action.getBadgeText()).toBe('2');
+    });
+
+    it('updates badge in real time when badgeEnabled setting is toggled', async () => {
+      const { onStorageChange } = await import('../src/background/serviceWorker.js');
+      await setStreamer('xqc', { slug: 'xqc', isLive: true });
+      await updateSettings({ badgeEnabled: false });
+
+      const changes = {
+        settings: {
+          newValue: { badgeEnabled: false },
+        },
+      };
+
+      await onStorageChange(changes, 'local');
+      expect(chromeMock.action.getBadgeText()).toBe('');
     });
   });
 

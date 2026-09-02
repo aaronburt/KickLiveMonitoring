@@ -132,10 +132,18 @@ export async function onExtensionInstalled() {
   await updateBadgeFromStreamers(streamers);
 }
 
+export async function onStorageChange(changes, areaName) {
+  if (areaName === 'local' && (changes?.streamers || changes?.settings)) {
+    const streamers = changes.streamers?.newValue || await getStreamers();
+    await updateBadgeFromStreamers(streamers);
+  }
+}
+
 if (typeof chrome !== 'undefined') {
   chrome.runtime?.onInstalled?.addListener(onExtensionInstalled);
   chrome.runtime?.onStartup?.addListener(onExtensionStartup);
   chrome.alarms?.onAlarm?.addListener(handleAlarm);
   chrome.notifications?.onClicked?.addListener(handleNotificationClick);
   chrome.runtime?.onMessage?.addListener(handleRuntimeMessage);
+  chrome.storage?.onChanged?.addListener(onStorageChange);
 }
