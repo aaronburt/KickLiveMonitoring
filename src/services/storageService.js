@@ -1,7 +1,6 @@
 export const DEFAULT_SETTINGS = {
   checkIntervalMinutes: 2,
   notificationsEnabled: true,
-  soundEnabled: false,
   debugLogging: false,
   sortBy: 'viewers',
   uiScale: '100',

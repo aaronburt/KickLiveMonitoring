@@ -442,7 +442,7 @@ describe('Adversarial Stress & State Transition Rigor', () => {
     const handledSettings = handleRuntimeMessage(
       {
         type: MESSAGE_TYPES.UPDATE_SETTINGS,
-        payload: { checkIntervalMinutes: 5, soundEnabled: true },
+        payload: { checkIntervalMinutes: 5, debugLogging: true },
       },
       {},
       sendResponse,
@@ -451,6 +451,6 @@ describe('Adversarial Stress & State Transition Rigor', () => {
     await new Promise((resolve) => setTimeout(resolve, 50));
     expect(responseData.success).toBe(true);
     expect(responseData.data.checkIntervalMinutes).toBe(5);
-    expect(responseData.data.soundEnabled).toBe(true);
+    expect(responseData.data.debugLogging).toBe(true);
   });
 });

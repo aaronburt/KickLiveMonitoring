@@ -26,17 +26,15 @@ describe('storageService', () => {
     const settings = await getSettings();
     expect(settings.checkIntervalMinutes).toBe(DEFAULT_SETTINGS.checkIntervalMinutes);
     expect(settings.notificationsEnabled).toBe(DEFAULT_SETTINGS.notificationsEnabled);
-    expect(settings.soundEnabled).toBe(DEFAULT_SETTINGS.soundEnabled);
     expect(settings.debugLogging).toBe(false);
     expect(settings.sortBy).toBe('viewers');
     expect(settings.uiScale).toBe('100');
   });
 
   it('updates and persists partial settings', async () => {
-    await updateSettings({ checkIntervalMinutes: 5, soundEnabled: true, debugLogging: true, sortBy: 'alphabetical', uiScale: '120' });
+    await updateSettings({ checkIntervalMinutes: 5, debugLogging: true, sortBy: 'alphabetical', uiScale: '120' });
     const updated = await getSettings();
     expect(updated.checkIntervalMinutes).toBe(5);
-    expect(updated.soundEnabled).toBe(true);
     expect(updated.debugLogging).toBe(true);
     expect(updated.sortBy).toBe('alphabetical');
     expect(updated.uiScale).toBe('120');

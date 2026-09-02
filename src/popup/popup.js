@@ -417,10 +417,6 @@ function bindEvents() {
     }
   });
 
-  document.getElementById('soundToggle')?.addEventListener('change', async (e) => {
-    await updateSettings({ soundEnabled: e.target.checked });
-  });
-
   document.getElementById('debugLoggingToggle')?.addEventListener('change', async (e) => {
     await updateSettings({ debugLogging: e.target.checked });
   });
@@ -525,8 +521,6 @@ export async function init() {
   if (notifToggle) notifToggle.checked = Boolean(settings.notificationsEnabled);
   const badgeToggle = document.getElementById('badgeToggle');
   if (badgeToggle) badgeToggle.checked = Boolean(settings.badgeEnabled ?? true);
-  const soundToggle = document.getElementById('soundToggle');
-  if (soundToggle) soundToggle.checked = Boolean(settings.soundEnabled);
   const debugToggle = document.getElementById('debugLoggingToggle');
   if (debugToggle) debugToggle.checked = Boolean(settings.debugLogging);
 
