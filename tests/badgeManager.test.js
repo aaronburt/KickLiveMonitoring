@@ -5,12 +5,14 @@ import {
   updateBadgeFromStreamers,
   KICK_BADGE_COLOR,
 } from '../src/background/badgeManager.js';
+import { updateSettings, clearStorage } from '../src/services/storageService.js';
 
 describe('badgeManager', () => {
   let chromeMock;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     chromeMock = installGlobalChromeMock();
+    await clearStorage();
   });
 
   it('sets badge text to empty string when live count is zero', async () => {
@@ -34,6 +36,18 @@ describe('badgeManager', () => {
     const count = await updateBadgeFromStreamers(streamersMap);
     expect(count).toBe(2);
     expect(chromeMock.action.getBadgeText()).toBe('2');
+  });
+
+  it('suppresses badge when badgeEnabled is false', async () => {
+    await updateSettings({ badgeEnabled: false });
+    const streamersMap = {
+      xqc: { slug: 'xqc', isLive: true },
+      adinross: { slug: 'adinross', isLive: true },
+    };
+
+    const count = await updateBadgeFromStreamers(streamersMap);
+    expect(count).toBe(0);
+    expect(chromeMock.action.getBadgeText()).toBe('');
   });
 
   it('handles empty or null streamers map gracefully', async () => {

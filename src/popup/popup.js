@@ -410,6 +410,13 @@ function bindEvents() {
     await updateSettings({ notificationsEnabled: e.target.checked });
   });
 
+  document.getElementById('badgeToggle')?.addEventListener('change', async (e) => {
+    await updateSettings({ badgeEnabled: e.target.checked });
+    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({ type: 'SYNC_BADGE' });
+    }
+  });
+
   document.getElementById('soundToggle')?.addEventListener('change', async (e) => {
     await updateSettings({ soundEnabled: e.target.checked });
   });
@@ -516,6 +523,8 @@ export async function init() {
   if (scaleSelect && settings.uiScale) scaleSelect.value = String(settings.uiScale);
   const notifToggle = document.getElementById('notificationsToggle');
   if (notifToggle) notifToggle.checked = Boolean(settings.notificationsEnabled);
+  const badgeToggle = document.getElementById('badgeToggle');
+  if (badgeToggle) badgeToggle.checked = Boolean(settings.badgeEnabled ?? true);
   const soundToggle = document.getElementById('soundToggle');
   if (soundToggle) soundToggle.checked = Boolean(settings.soundEnabled);
   const debugToggle = document.getElementById('debugLoggingToggle');

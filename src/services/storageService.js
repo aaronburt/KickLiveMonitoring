@@ -5,6 +5,7 @@ export const DEFAULT_SETTINGS = {
   debugLogging: false,
   sortBy: 'viewers',
   uiScale: '100',
+  badgeEnabled: true,
 };
 
 let writeQueue = Promise.resolve();
