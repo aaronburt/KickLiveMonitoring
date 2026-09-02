@@ -66,10 +66,13 @@
       </div>
       <div class="settings-body">
         <div class="setting-row">
-          <label for="checkIntervalSelect" class="setting-label">Poll Frequency</label>
+          <div class="setting-label-group">
+            <label for="checkIntervalSelect" class="setting-label">Poll Frequency</label>
+            <span class="setting-hint">Anything &lt; 5 mins is kinda silly</span>
+          </div>
           <select id="checkIntervalSelect" class="select-input">
-            <option value="1">Every 1 minute</option>
-            <option value="2">Every 2 minutes</option>
+            <option value="1">Every 1 min (kinda silly)</option>
+            <option value="2">Every 2 mins (kinda silly)</option>
             <option value="5">Every 5 minutes</option>
             <option value="10">Every 10 minutes</option>
             <option value="15">Every 15 minutes</option>

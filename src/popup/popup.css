@@ -222,9 +222,20 @@ body.popout-mode .app-container {
   justify-content: space-between;
 }
 
+.setting-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
 .setting-label {
   font-size: 13px;
   color: var(--text-primary);
+}
+
+.setting-hint {
+  font-size: 11px;
+  color: var(--text-muted);
 }
 
 .select-input {
