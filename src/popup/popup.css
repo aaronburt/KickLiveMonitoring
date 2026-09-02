@@ -237,6 +237,8 @@ body.popout-mode .app-container {
 .setting-hint {
   font-size: 11px;
   color: var(--text-muted);
+}
+
 .setting-hint.warning-hint {
   color: var(--warning);
 }
