@@ -22,7 +22,6 @@ import {
   updateSettings,
   getSyncedWatchlist,
 } from '../services/storageService.js';
-import { validateSlug } from '../utils/slugValidator.js';
 import { logDebug } from '../utils/logger.js';
 
 export const MESSAGE_TYPES = {

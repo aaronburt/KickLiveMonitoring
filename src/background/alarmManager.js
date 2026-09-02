@@ -10,17 +10,12 @@ export async function createPollAlarm(intervalMinutes) {
   const parsed = Number(intervalMinutes);
   const minutes = Math.max(1, Number.isFinite(parsed) ? parsed : DEFAULT_INTERVAL_MINUTES);
   await logDebug('Alarm Scheduled', `Interval: ${minutes} min`);
-  return new Promise((resolve) => {
-    chrome.alarms.clear(POLL_ALARM_NAME, () => {
-      chrome.alarms.create(POLL_ALARM_NAME, { periodInMinutes: minutes, delayInMinutes: minutes });
-      resolve();
-    });
-  });
+  chrome.alarms.create(POLL_ALARM_NAME, { periodInMinutes: minutes, delayInMinutes: minutes });
 }
 
-export async function clearPollAlarm() {
+export function clearPollAlarm() {
   if (typeof chrome === 'undefined' || !chrome.alarms) return;
-  return new Promise((resolve) => chrome.alarms.clear(POLL_ALARM_NAME, () => resolve()));
+  chrome.alarms.clear(POLL_ALARM_NAME);
 }
 
 export async function handleAlarm(alarm) {
