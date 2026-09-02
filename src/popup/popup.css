@@ -237,10 +237,55 @@ body.popout-mode .app-container {
 .setting-hint {
   font-size: 11px;
   color: var(--text-muted);
-}
-
 .setting-hint.warning-hint {
   color: var(--warning);
+}
+
+.settings-group {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.settings-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  cursor: pointer;
+  user-select: none;
+  list-style: none;
+  transition: background-color 0.15s ease;
+}
+
+.settings-group-header::-webkit-details-marker {
+  display: none;
+}
+
+.settings-group-header:hover {
+  background-color: var(--bg-hover);
+}
+
+.settings-group[open] .settings-group-header {
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.settings-group .chevron-icon {
+  color: var(--text-secondary);
+  transition: transform 0.2s ease;
+}
+
+.settings-group[open] .chevron-icon {
+  transform: rotate(180deg);
+}
+
+.settings-group-content {
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: rgba(0, 0, 0, 0.2);
 }
 
 .select-input {

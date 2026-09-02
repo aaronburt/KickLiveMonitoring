@@ -110,17 +110,27 @@
             <span class="toggle-slider"></span>
           </label>
         </div>
-        <div class="setting-row">
-          <span class="setting-label">Debug Logging</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="debugLoggingToggle">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <span class="setting-label">Test Notification</span>
-          <button type="button" id="debugLiveNotifBtn" class="setting-btn">Test</button>
-        </div>
+        <details class="settings-group" id="debugDropdown">
+          <summary class="settings-group-header">
+            <span class="setting-label">Debugging</span>
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </summary>
+          <div class="settings-group-content">
+            <div class="setting-row">
+              <span class="setting-label">Debug Logging</span>
+              <label class="toggle-switch">
+                <input type="checkbox" id="debugLoggingToggle">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+            <div class="setting-row">
+              <span class="setting-label">Test Notification</span>
+              <button type="button" id="debugLiveNotifBtn" class="setting-btn">Test</button>
+            </div>
+          </div>
+        </details>
         <div class="setting-row">
           <span class="setting-label">Privacy Policy</span>
           <button type="button" id="settingsPrivacyBtn" class="setting-btn">View</button>
