@@ -348,7 +348,7 @@ function bindEvents() {
       });
       window.close?.();
     } else {
-      window.open(url, 'StreamerMonitorPopout', 'width=380,height=600,menubar=no,toolbar=no,location=no');
+      window.open(url, 'KickMonitorPopout', 'width=380,height=600,menubar=no,toolbar=no,location=no');
       window.close?.();
     }
   });

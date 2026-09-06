@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Streamer Monitor for Kick.com",
+  "name": "Kick Monitor",
   "version": "1.1.0",
-  "description": "Monitors live channels and sends instant desktop notifications when streams go live.",
+  "description": "Monitors live streams and sends instant desktop notifications when channels go live on Kick.",
   "icons": {
     "16": "assets/icons/icon-16.png",
     "32": "assets/icons/icon-32.png",
@@ -17,7 +17,7 @@
       "48": "assets/icons/icon-48.png",
       "128": "assets/icons/icon-128.png"
     },
-    "default_title": "Streamer Monitor"
+    "default_title": "Kick Monitor"
   },
   "options_ui": {
     "page": "src/privacy/privacy.html",

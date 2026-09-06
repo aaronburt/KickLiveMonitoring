@@ -1,4 +1,4 @@
-# Streamer Monitor (for Kick.com)
+# Kick Monitor
 
 A lightweight Chrome Extension (Manifest V3) that tracks your favorite Kick.com creators and notifies you the moment they go live.
 
@@ -39,7 +39,7 @@ bun test
 
 ## Disclaimer
 
-**Streamer Monitor** is an independent, open-source community project and is **not** affiliated with, endorsed by, or sponsored by Kick.com or Kick Community Pty Ltd. Built with the assistance of AI and reviewed/tested by a human developer.
+**Kick Monitor** is an independent, open-source community project and is **not** affiliated with, endorsed by, or sponsored by Kick.com or Kick Community Pty Ltd. Built with the assistance of AI and reviewed/tested by a human developer.
 
 ---
 
