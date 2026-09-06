@@ -10,7 +10,6 @@ import {
 import {
   getStreamers,
   getSettings,
-  updateSettings,
 } from '../services/storageService.js';
 import {
   formatViewerCount,

@@ -10,7 +10,6 @@ import {
   canExecute,
   recordSuccess,
   recordFailure,
-  resetCircuit,
   isSystemicApiError,
   getCircuitStatus,
 } from './circuitBreaker.js';

@@ -10,11 +10,10 @@ import {
   getStreamers,
   getStreamer,
   setStreamer,
-  getSettings,
   updateSettings,
   clearStorage,
 } from '../src/services/storageService.js';
-import { validateSlug, normalizeSlug } from '../src/utils/slugValidator.js';
+import { validateSlug } from '../src/utils/slugValidator.js';
 import { handleRuntimeMessage, MESSAGE_TYPES } from '../src/background/serviceWorker.js';
 
 describe('Adversarial Stress & State Transition Rigor', () => {
