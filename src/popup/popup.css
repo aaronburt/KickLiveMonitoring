@@ -173,6 +173,7 @@ body.popout-mode .app-container {
   }
   to {
     transform: rotate(360deg);
+  }
 }
 
 .add-form {
