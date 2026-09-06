@@ -5,7 +5,7 @@ export async function logDebug(event, ...details) {
     const settings = await getSettings();
     if (settings.debugLogging) {
       const time = new Date().toISOString().split('T')[1].slice(0, 8);
-      console.log(`[KickMonitor ${time}] ${event}`, ...details);
+      console.log(`[StreamerMonitor ${time}] ${event}`, ...details);
     }
   } catch {}
 }

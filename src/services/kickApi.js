@@ -44,6 +44,26 @@ function fallback(slug, error = null) {
   };
 }
 
+export function normalizeStreamStartTime(rawTime) {
+  if (!rawTime) return null;
+  if (typeof rawTime === 'number') {
+    const ms = rawTime * (rawTime < 1e12 ? 1000 : 1);
+    return new Date(ms).toISOString();
+  }
+  if (typeof rawTime === 'string') {
+    const trimmed = rawTime.trim();
+    if (!trimmed) return null;
+    if (trimmed.endsWith('Z') || /[+-]\d{2}:?\d{2}$/.test(trimmed)) {
+      const d = new Date(trimmed);
+      return Number.isNaN(d.getTime()) ? null : d.toISOString();
+    }
+    const isoString = trimmed.replace(' ', 'T') + 'Z';
+    const d = new Date(isoString);
+    return Number.isNaN(d.getTime()) ? null : d.toISOString();
+  }
+  return null;
+}
+
 export async function fetchChannelData(rawSlug, customFetch = fetch) {
   const slug = typeof rawSlug === 'string' ? rawSlug.trim().toLowerCase() : '';
   if (!slug) return fallback('', 'Channel slug is required');
@@ -78,7 +98,7 @@ export async function fetchChannelData(rawSlug, customFetch = fetch) {
       category,
       viewerCount: typeof livestream?.viewer_count === 'number' ? livestream.viewer_count : 0,
       thumbnailUrl: livestream?.thumbnail?.src || livestream?.thumbnail?.url || '',
-      startedAt: livestream?.start_time || livestream?.created_at || null,
+      startedAt: normalizeStreamStartTime(livestream?.start_time || livestream?.created_at),
       lastCheckedAt: Date.now(),
       error: null,
     };

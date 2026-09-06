@@ -54,7 +54,7 @@ describe('streamerTracker', () => {
       const notifs = await chromeMock.notifications.getAll();
       const notifKeys = Object.keys(notifs);
       expect(notifKeys.length).toBe(1);
-      expect(notifs[notifKeys[0]].title).toContain('xQc is live on Kick!');
+      expect(notifs[notifKeys[0]].title).toContain('xQc is live!');
     });
 
     it('does not trigger duplicate notification on steady live (live -> live)', async () => {

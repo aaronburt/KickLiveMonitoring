@@ -11,7 +11,7 @@
 
 ## Reporting a Vulnerability
 
-We take the security of **Kick Streamer Monitor** seriously. If you discover a security vulnerability or potential threat in this extension, please follow responsible disclosure practices:
+We take the security of **Streamer Monitor** seriously. If you discover a security vulnerability or potential threat in this extension, please follow responsible disclosure practices:
 
 1. **Do not disclose publicly**: Avoid opening public GitHub issues, discussions, or social media posts for suspected security vulnerabilities.
 2. **Submit a private report**: Send a detailed advisory with reproduction steps, proof-of-concept, and impact assessment to the repository maintainers or through GitHub Security Advisories.

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kick Streamer Monitor</title>
+  <title>Streamer Monitor</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -11,12 +11,16 @@
     <header class="header">
       <div class="brand">
         <div class="brand-icon">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M3 3h6v6h6V3h6v6h-6v6h6v6h-6v-6H9v6H3V3z" fill="#53FC18" />
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#53FC18" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4.93 19.07A10 10 0 0 1 2 12a10 10 0 0 1 2.93-7.07" />
+            <path d="M19.07 4.93A10 10 0 0 1 22 12a10 10 0 0 1-2.93 7.07" />
+            <path d="M7.76 16.24A6 6 0 0 1 6 12a6 6 0 0 1 1.76-4.24" />
+            <path d="M16.24 7.76A6 6 0 0 1 18 12a6 6 0 0 1-1.76 4.24" />
+            <circle cx="12" cy="12" r="2.5" fill="#53FC18" />
           </svg>
         </div>
         <div class="brand-text">
-          <h1 class="brand-title">Kick Monitor</h1>
+          <h1 class="brand-title">Streamer Monitor</h1>
           <span id="headerLiveCounter" class="live-counter-badge">0 Live</span>
         </div>
       </div>
@@ -49,7 +53,7 @@
           <line x1="12" y1="9" x2="12" y2="13"></line>
           <line x1="12" y1="17" x2="12.01" y2="17"></line>
         </svg>
-        <span id="circuitBannerText" class="circuit-banner-text">Kick API temporarily throttled. Polling paused.</span>
+        <span id="circuitBannerText" class="circuit-banner-text">Stream API temporarily throttled. Polling paused.</span>
       </div>
       <button id="circuitRetryBtn" class="circuit-retry-btn" type="button">Retry</button>
     </div>
@@ -141,7 +145,7 @@
             type="text"
             id="streamerInput"
             class="text-input"
-            placeholder="Enter Kick username"
+            placeholder="Enter channel slug or URL"
             autocomplete="off"
             spellcheck="false"
             required

@@ -166,7 +166,7 @@ function renderList() {
     const duration = s.isLive && s.startedAt ? formatStreamDuration(s.startedAt) : '';
     const details = s.isLive
       ? `<div class="card-bottom-row">
-           <span class="category-tag">${escapeHtml(s.category || 'Kick')}</span>
+           <span class="category-tag">${escapeHtml(s.category || 'Live')}</span>
            ${duration ? `<span class="stream-uptime" title="Stream uptime">${duration}</span>` : ''}
          </div>`
       : `<div class="card-bottom-row">
@@ -208,7 +208,7 @@ export function updateCircuitBanner() {
   if (status.state === 'OPEN') {
     const remainingSeconds = Math.max(0, Math.ceil((status.cooldownUntil - Date.now()) / 1000));
     const remainingMinutes = Math.max(1, Math.ceil(remainingSeconds / 60));
-    text.textContent = `Kick API throttled or unreachable. Polling paused (${remainingMinutes}m left).`;
+    text.textContent = `API throttled or unreachable. Polling paused (${remainingMinutes}m left).`;
     banner.classList.remove('hidden');
   } else {
     banner.classList.add('hidden');
@@ -348,7 +348,7 @@ function bindEvents() {
       });
       window.close?.();
     } else {
-      window.open(url, 'KickMonitorPopout', 'width=380,height=600,menubar=no,toolbar=no,location=no');
+      window.open(url, 'StreamerMonitorPopout', 'width=380,height=600,menubar=no,toolbar=no,location=no');
       window.close?.();
     }
   });
@@ -361,7 +361,7 @@ function bindEvents() {
       await checkAllStreamers({ bypassCircuitBreaker: true });
     }
     await refreshData();
-    showFeedback('Retried connection to Kick API', 'success');
+    showFeedback('Retried connection to API', 'success');
   });
 
   document.getElementById('refreshButton')?.addEventListener('click', async () => {
@@ -447,8 +447,8 @@ function bindEvents() {
         {
           type: 'basic',
           iconUrl,
-          title: `${mock.username} is live on Kick!`,
-          message: `${mock.title}\nCategory: ${mock.category || 'Kick'}`,
+          title: `${mock.username} is live!`,
+          message: `${mock.title}\nCategory: ${mock.category || 'Live'}`,
           contextMessage: `Viewers: ${formatViewerCount(mock.viewerCount || 0)}`,
           priority: 2,
         },
@@ -482,18 +482,31 @@ function bindEvents() {
 
 export function checkActiveKickTab() {
   if (typeof chrome === 'undefined' || !chrome.tabs?.query) return;
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-    const activeUrl = tabs?.[0]?.url;
-    if (!activeUrl || !activeUrl.includes('kick.com')) return;
+
+  const handleTabs = (tabs) => {
+    const tab = tabs?.[0];
+    const activeUrl = tab?.url || tab?.pendingUrl;
+    if (!activeUrl || !activeUrl.includes('kick.com')) return false;
 
     const validation = validateSlug(activeUrl);
-    const reserved = ['categories', 'following', 'browse', 'privacy', 'terms', 'community-guidelines', 'video', 'search'];
-    if (!validation.isValid || reserved.includes(validation.slug)) return;
+    const reserved = ['categories', 'following', 'browse', 'privacy', 'terms', 'community-guidelines', 'video', 'search', 'transactions', 'settings', 'profile'];
+    if (!validation.isValid || reserved.includes(validation.slug)) return false;
 
     const isAlreadyTracked = Boolean(state.streamers[validation.slug]);
     const input = document.getElementById('streamerInput');
     if (input && !isAlreadyTracked && !input.value) {
       input.value = validation.slug;
+      return true;
+    }
+    return false;
+  };
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const handled = handleTabs(tabs);
+    if (!handled) {
+      chrome.tabs.query({ active: true, lastFocusedWindow: true }, (fallbackTabs) => {
+        handleTabs(fallbackTabs);
+      });
     }
   });
 }

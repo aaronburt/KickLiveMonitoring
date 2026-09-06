@@ -11,9 +11,21 @@ export function formatViewerCount(count) {
 
 export function formatStreamDuration(startTime, now = Date.now()) {
   if (!startTime) return '';
-  const start = new Date(startTime).getTime();
-  if (Number.isNaN(start)) return '';
-  const diffSec = Math.max(0, Math.floor(((typeof now === 'number' ? now : new Date(now).getTime()) - start) / 1000));
+  let startMs = 0;
+  if (typeof startTime === 'string') {
+    const trimmed = startTime.trim();
+    if (!trimmed.endsWith('Z') && !/[+-]\d{2}:?\d{2}$/.test(trimmed)) {
+      startMs = new Date(trimmed.replace(' ', 'T') + 'Z').getTime();
+    } else {
+      startMs = new Date(trimmed).getTime();
+    }
+  } else if (typeof startTime === 'number') {
+    startMs = startTime < 1e12 ? startTime * 1000 : startTime;
+  } else if (startTime instanceof Date) {
+    startMs = startTime.getTime();
+  }
+  if (!startMs || Number.isNaN(startMs)) return '';
+  const diffSec = Math.max(0, Math.floor(((typeof now === 'number' ? now : new Date(now).getTime()) - startMs) / 1000));
   const h = Math.floor(diffSec / 3600);
   const m = Math.floor((diffSec % 3600) / 60);
   return h > 0 ? `${h}h ${m}m` : `${m}m`;

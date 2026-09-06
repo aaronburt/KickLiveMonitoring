@@ -28,7 +28,7 @@ describe('logger', () => {
     await updateSettings({ debugLogging: true });
     await logDebug('TestEvent', { foo: 'bar' });
     expect(logged.length).toBe(1);
-    expect(logged[0][0]).toContain('[KickMonitor');
+    expect(logged[0][0]).toContain('[StreamerMonitor');
     expect(logged[0][0]).toContain('TestEvent');
     expect(logged[0][1]).toEqual({ foo: 'bar' });
   });

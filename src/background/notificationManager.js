@@ -14,7 +14,7 @@ export async function createLiveNotification(streamer) {
   if (!streamer?.slug || typeof chrome === 'undefined' || !chrome.notifications) return null;
   const id = getNotificationId(streamer.slug);
   const title = streamer.title || 'Live Stream';
-  const category = streamer.category ? `Category: ${streamer.category}` : 'Kick Stream';
+  const category = streamer.category ? `Category: ${streamer.category}` : 'Live Stream';
   const viewers = streamer.viewerCount > 0 ? `Viewers: ${formatViewerCount(streamer.viewerCount)}` : 'Live Now';
   const iconUrl = typeof chrome.runtime?.getURL === 'function'
     ? chrome.runtime.getURL('assets/icons/icon-128.png')
@@ -26,7 +26,7 @@ export async function createLiveNotification(streamer) {
       {
         type: 'basic',
         iconUrl,
-        title: `${streamer.username} is live on Kick!`,
+        title: `${streamer.username} is live!`,
         message: `${title}\n${category}`,
         contextMessage: viewers,
         priority: 2,

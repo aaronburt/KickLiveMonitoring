@@ -19,26 +19,69 @@ function getStorage() {
     return chrome.storage.local;
   }
   return {
-    get: (k, cb) => cb({}),
+    get: (k, cb) => cb?.({}),
     set: (i, cb) => cb?.(),
-    remove: (k, cb) => cb?.(),
     clear: (cb) => cb?.(),
   };
 }
 
+function storageGet(keys) {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = (val) => {
+      if (!resolved) {
+        resolved = true;
+        resolve(val || {});
+      }
+    };
+    const res = getStorage().get(keys, safeResolve);
+    if (res && typeof res.then === 'function') {
+      res.then(safeResolve);
+    }
+  });
+}
+
+function storageSet(items) {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = () => {
+      if (!resolved) {
+        resolved = true;
+        resolve();
+      }
+    };
+    const res = getStorage().set(items, safeResolve);
+    if (res && typeof res.then === 'function') {
+      res.then(safeResolve);
+    }
+  });
+}
+
+function storageClear() {
+  return new Promise((resolve) => {
+    let resolved = false;
+    const safeResolve = () => {
+      if (!resolved) {
+        resolved = true;
+        resolve();
+      }
+    };
+    const res = getStorage().clear?.(safeResolve);
+    if (res && typeof res.then === 'function') {
+      res.then(safeResolve);
+    }
+  });
+}
+
 function getSyncStorage() {
-  if (typeof chrome !== 'undefined' && chrome.storage?.sync) {
-    return chrome.storage.sync;
-  }
-  return null;
+  return typeof chrome !== 'undefined' && chrome.storage?.sync ? chrome.storage.sync : null;
 }
 
 export async function syncWatchlistToCloud(streamersMap) {
   const sync = getSyncStorage();
   if (!sync) return;
-  const watchlist = Object.keys(streamersMap || {});
   try {
-    sync.set({ watchlist });
+    sync.set({ watchlist: Object.keys(streamersMap || {}) });
   } catch {}
 }
 
@@ -57,18 +100,14 @@ export async function getSyncedWatchlist() {
 }
 
 export async function getStreamers() {
-  return new Promise((resolve) => {
-    getStorage().get(['streamers'], (result) => {
-      resolve(result?.streamers || {});
-    });
-  });
+  const result = await storageGet(['streamers']);
+  return result?.streamers || {};
 }
 
 export async function getStreamer(rawSlug) {
   if (!rawSlug || typeof rawSlug !== 'string') return null;
-  const slug = rawSlug.trim().toLowerCase();
   const streamers = await getStreamers();
-  return streamers[slug] || null;
+  return streamers[rawSlug.trim().toLowerCase()] || null;
 }
 
 export async function setStreamer(rawSlug, streamerData) {
@@ -78,18 +117,14 @@ export async function setStreamer(rawSlug, streamerData) {
     const streamers = await getStreamers();
     streamers[slug] = { ...streamerData, slug };
     await syncWatchlistToCloud(streamers);
-    return new Promise((resolve) => {
-      getStorage().set({ streamers }, () => resolve());
-    });
+    await storageSet({ streamers });
   });
 }
 
 export async function saveAllStreamers(streamersMap) {
   return enqueue(async () => {
     await syncWatchlistToCloud(streamersMap);
-    return new Promise((resolve) => {
-      getStorage().set({ streamers: streamersMap || {} }, () => resolve());
-    });
+    await storageSet({ streamers: streamersMap || {} });
   });
 }
 
@@ -100,18 +135,13 @@ export async function removeStreamer(rawSlug) {
     const streamers = await getStreamers();
     delete streamers[slug];
     await syncWatchlistToCloud(streamers);
-    return new Promise((resolve) => {
-      getStorage().set({ streamers }, () => resolve());
-    });
+    await storageSet({ streamers });
   });
 }
 
 export async function getSettings() {
-  return new Promise((resolve) => {
-    getStorage().get(['settings'], (result) => {
-      resolve({ ...DEFAULT_SETTINGS, ...(result?.settings || {}) });
-    });
-  });
+  const result = await storageGet(['settings']);
+  return { ...DEFAULT_SETTINGS, ...(result?.settings || {}) };
 }
 
 export async function updateSettings(partialSettings) {
@@ -124,9 +154,8 @@ export async function updateSettings(partialSettings) {
         sync.set({ settings: updated });
       } catch {}
     }
-    return new Promise((resolve) => {
-      getStorage().set({ settings: updated }, () => resolve(updated));
-    });
+    await storageSet({ settings: updated });
+    return updated;
   });
 }
 
@@ -138,8 +167,6 @@ export async function clearStorage() {
         sync.clear?.();
       } catch {}
     }
-    return new Promise((resolve) => {
-      getStorage().clear(() => resolve());
-    });
+    await storageClear();
   });
 }

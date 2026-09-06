@@ -5,6 +5,7 @@ import {
   validateKickChannelSchema,
   validateKickSearchSchema,
   verifyApiHealth,
+  normalizeStreamStartTime,
 } from '../src/services/kickApi.js';
 
 describe('kickApi', () => {
@@ -253,6 +254,33 @@ describe('kickApi', () => {
       };
       const results = await searchChannels('tarik', 3, mockFetch);
       expect(results).toEqual([]);
+    });
+  });
+
+  describe('normalizeStreamStartTime', () => {
+    it('returns null for empty or invalid inputs', () => {
+      expect(normalizeStreamStartTime(null)).toBeNull();
+      expect(normalizeStreamStartTime(undefined)).toBeNull();
+      expect(normalizeStreamStartTime('')).toBeNull();
+      expect(normalizeStreamStartTime('invalid-date-string')).toBeNull();
+    });
+
+    it('normalizes UTC timestamps with space separator to ISO string ending in Z', () => {
+      const normalized = normalizeStreamStartTime('2026-09-03 16:00:00');
+      expect(normalized).toBe('2026-09-03T16:00:00.000Z');
+    });
+
+    it('preserves existing ISO strings ending in Z', () => {
+      const normalized = normalizeStreamStartTime('2026-09-03T16:00:00Z');
+      expect(normalized).toBe('2026-09-03T16:00:00.000Z');
+    });
+
+    it('handles numeric Unix timestamps', () => {
+      const normalizedSec = normalizeStreamStartTime(1756915200);
+      expect(normalizedSec).toBe(new Date(1756915200000).toISOString());
+
+      const normalizedMs = normalizeStreamStartTime(1756915200000);
+      expect(normalizedMs).toBe(new Date(1756915200000).toISOString());
     });
   });
 });

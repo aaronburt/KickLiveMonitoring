@@ -1,4 +1,4 @@
-# Project: Kick.com Streamer Monitor Chrome Extension (Manifest V3)
+# Project: Streamer Monitor (for Kick.com) Chrome Extension (Manifest V3)
 
 ## Architecture
 - **Runtime**: Google Chrome Manifest V3 Extension (Vanilla ES Modules, HTML5, CSS3)

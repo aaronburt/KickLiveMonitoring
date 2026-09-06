@@ -45,7 +45,7 @@ describe('notificationManager', () => {
       const allNotifs = await chromeMock.notifications.getAll();
       const created = allNotifs[notifId];
       expect(created).toBeDefined();
-      expect(created.title).toBe('xQc is live on Kick!');
+      expect(created.title).toBe('xQc is live!');
       expect(created.message).toContain('🔴 LIVE GAMING');
       expect(created.message).toContain('Category: Just Chatting');
       expect(created.contextMessage).toContain('25K');

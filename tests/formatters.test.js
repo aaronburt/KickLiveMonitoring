@@ -57,6 +57,18 @@ describe('formatters', () => {
       const started = new Date(now - (2 * 3600 * 1000 + 45 * 60 * 1000)).toISOString();
       expect(formatStreamDuration(started, now)).toBe('2h 45m');
     });
+
+    it('parses timestamps without timezone as UTC', () => {
+      const now = new Date('2026-09-03T17:00:00.000Z').getTime();
+      expect(formatStreamDuration('2026-09-03 16:00:00', now)).toBe('1h 0m');
+    });
+
+    it('handles numeric and Date object inputs', () => {
+      const now = 1756653600000;
+      expect(formatStreamDuration(now - 3600000, now)).toBe('1h 0m');
+      expect(formatStreamDuration(Math.floor((now - 3600000) / 1000), now)).toBe('1h 0m');
+      expect(formatStreamDuration(new Date(now - 1800000), now)).toBe('30m');
+    });
   });
 
   describe('formatRelativeTime', () => {

@@ -70,7 +70,7 @@ describe('Adversarial Stress & State Transition Rigor', () => {
     const notifKeys = Object.keys(notifications);
     expect(notifKeys.length).toBe(1);
     const notif = notifications[notifKeys[0]];
-    expect(notif.title).toBe('Trainwreckstv is live on Kick!');
+    expect(notif.title).toBe('Trainwreckstv is live!');
     expect(notif.message).toContain('SQUAD CAST PODCAST');
     expect(notif.message).toContain('Just Chatting');
   });
