@@ -16,6 +16,7 @@
   - `src/utils/slugValidator.js`: Channel slug normalization, URL parsing, sanitization.
   - `src/utils/formatters.js`: Viewer counts, relative time formatting.
   - `src/utils/logger.js`: Configurable debug logging utility.
+  - `src/utils/navigation.js`: Tab and page navigation routing.
 - **Testing Layer**:
   - `tests/mocks/chromeMock.js`: Comprehensive in-memory mock for Chrome Extension APIs.
   - Test suites for all services, background managers, UI helpers, options page, and state transitions using `bun test`.
@@ -92,6 +93,7 @@ src/
     slugValidator.js
     formatters.js
     logger.js
+    navigation.js
 tests/
   mocks/
     chromeMock.js

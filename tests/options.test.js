@@ -8,6 +8,10 @@ import {
   initOptions,
 } from '../src/options/options.js';
 import {
+  openOptionsPage,
+  openPrivacyPage,
+} from '../src/utils/navigation.js';
+import {
   getSettings,
   updateSettings,
   clearStorage,
@@ -279,5 +283,42 @@ describe('options page', () => {
     elements.checkIntervalSelect.value = '15';
     await elements.checkIntervalSelect.dispatchEvent('change');
     expect(elements.toast.textContent).toBe('Poll interval updated');
+  });
+
+  it('openOptionsPage calls chrome.runtime.openOptionsPage and creates tab with options url', () => {
+    let called = false;
+    chromeMock.runtime.openOptionsPage = () => {
+      called = true;
+      chromeMock.tabs.create({ url: chromeMock.runtime.getURL('src/options/options.html') });
+    };
+
+    openOptionsPage();
+    expect(called).toBe(true);
+    expect(chromeMock._internal.createdTabs[0].url).toBe('chrome-extension://khginnookedbgdjokkogccfkckdpgalh/src/options/options.html');
+  });
+
+  it('openOptionsPage falls back to chrome.tabs.create when openOptionsPage is undefined', () => {
+    delete chromeMock.runtime.openOptionsPage;
+
+    openOptionsPage();
+    expect(chromeMock._internal.createdTabs[0].url).toBe('chrome-extension://khginnookedbgdjokkogccfkckdpgalh/src/options/options.html');
+  });
+
+  it('openOptionsPage falls back to window.open when chrome is undefined', () => {
+    const savedChrome = globalThis.chrome;
+    let openedUrl = '';
+    globalThis.window.open = (u) => { openedUrl = u; };
+    try {
+      delete globalThis.chrome;
+      openOptionsPage();
+      expect(openedUrl).toBe('chrome-extension://khginnookedbgdjokkogccfkckdpgalh/src/options/options.html');
+    } finally {
+      globalThis.chrome = savedChrome;
+    }
+  });
+
+  it('openPrivacyPage opens privacy page via chrome.tabs.create', () => {
+    openPrivacyPage();
+    expect(chromeMock._internal.createdTabs[0].url).toBe('chrome-extension://khginnookedbgdjokkogccfkckdpgalh/src/privacy/privacy.html');
   });
 });

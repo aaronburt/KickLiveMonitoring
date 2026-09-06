@@ -283,6 +283,14 @@ export function createChromeMock() {
         }
         return Promise.resolve(responseValue);
       },
+      getURL(path = '') {
+        const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+        return `chrome-extension://khginnookedbgdjokkogccfkckdpgalh/${cleanPath}`;
+      },
+      openOptionsPage(callback) {
+        const url = mock.runtime.getURL('src/options/options.html');
+        return mock.tabs.create({ url, active: true }, callback);
+      },
     },
     _internal: {
       store,

@@ -37,7 +37,7 @@
             <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
           </svg>
         </button>
-        <button id="settingsToggle" class="icon-button" title="Settings" aria-label="Settings">
+        <button id="settingsToggle" class="icon-button" title="Options" aria-label="Options">
           <svg class="icon-svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -56,91 +56,6 @@
         <span id="circuitBannerText" class="circuit-banner-text">Stream API temporarily throttled. Polling paused.</span>
       </div>
       <button id="circuitRetryBtn" class="circuit-retry-btn" type="button">Retry</button>
-    </div>
-
-    <div id="settingsPanel" class="settings-panel hidden">
-      <div class="settings-header">
-        <h2 class="settings-title">Monitoring Settings</h2>
-        <button id="settingsClose" class="icon-button small" aria-label="Close settings">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-        </button>
-      </div>
-      <div class="settings-body">
-        <div class="setting-row">
-          <div class="setting-label-group">
-            <label for="checkIntervalSelect" class="setting-label">Poll Frequency</label>
-            <span class="setting-hint warning-hint">⚠️ &lt; 5 mins may trigger rate limits</span>
-          </div>
-          <select id="checkIntervalSelect" class="select-input">
-            <option value="1">⚠️ 1 min (High rate-limit risk)</option>
-            <option value="2">⚠️ 2 mins (Frequent)</option>
-            <option value="5">5 mins (Recommended)</option>
-            <option value="10">10 mins</option>
-            <option value="15">15 mins</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <label for="sortBySelect" class="setting-label">Sort Order</label>
-          <select id="sortBySelect" class="select-input">
-            <option value="viewers">Viewers (High to Low)</option>
-            <option value="alphabetical">Alphabetical (A–Z)</option>
-            <option value="uptime">Stream Uptime</option>
-            <option value="recent">Recently Checked</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <label for="uiScaleSelect" class="setting-label">UI Zoom</label>
-          <select id="uiScaleSelect" class="select-input">
-            <option value="100">100% (Default)</option>
-            <option value="110">110% (Medium)</option>
-            <option value="120">120% (Large)</option>
-            <option value="130">130% (Extra Large)</option>
-          </select>
-        </div>
-        <div class="setting-row">
-          <span class="setting-label">Desktop Notifications</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="notificationsToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <div class="setting-row">
-          <span class="setting-label">Live Badge Counter</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="badgeToggle" checked>
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-        <details class="settings-group" id="debugDropdown">
-          <summary class="settings-group-header">
-            <span class="setting-label">Debugging</span>
-            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <polyline points="6 9 12 15 18 9"></polyline>
-            </svg>
-          </summary>
-          <div class="settings-group-content">
-            <div class="setting-row">
-              <span class="setting-label">Debug Logging</span>
-              <label class="toggle-switch">
-                <input type="checkbox" id="debugLoggingToggle">
-                <span class="toggle-slider"></span>
-              </label>
-            </div>
-            <div class="setting-row">
-              <span class="setting-label">Test Notification</span>
-              <button type="button" id="debugLiveNotifBtn" class="setting-btn">Test</button>
-            </div>
-          </div>
-        </details>
-        <div class="setting-row" style="margin-top: 8px; padding-top: 12px; border-top: 1px solid var(--border-subtle);">
-          <button type="button" id="openOptionsBtn" class="setting-btn" style="width: 100%; justify-content: center;">
-            Full Options Dashboard ↗
-          </button>
-        </div>
-      </div>
     </div>
 
     <form id="addStreamerForm" class="add-form">
@@ -185,11 +100,19 @@
     </main>
 
     <footer class="footer">
-      <a href="#" id="privacyLink" class="footer-link">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
-          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-        </svg>Privacy & Disclaimer
-      </a>
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <a href="#" id="optionsLink" class="footer-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>Options
+        </a>
+        <a href="#" id="privacyLink" class="footer-link">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>Privacy & Disclaimer
+        </a>
+      </div>
       <span id="lastUpdatedTime" class="footer-time"></span>
     </footer>
   </div>

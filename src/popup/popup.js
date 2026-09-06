@@ -20,6 +20,7 @@ import {
 } from '../utils/formatters.js';
 import { validateSlug } from '../utils/slugValidator.js';
 import { searchChannels } from '../services/kickApi.js';
+import { openOptionsPage, openPrivacyPage } from '../utils/navigation.js';
 
 const DEFAULT_AVATAR = 'data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2240%22%20height%3D%2240%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22%238A939B%22%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%228%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M4%2020c0-4%204-6%208-6s8%202%208%206%22%2F%3E%3C%2Fsvg%3E';
 
@@ -379,116 +380,9 @@ function bindEvents() {
     }
   });
 
-  document.getElementById('settingsToggle')?.addEventListener('click', () => {
-    document.getElementById('settingsPanel')?.classList.toggle('hidden');
-  });
-  document.getElementById('settingsClose')?.addEventListener('click', () => {
-    document.getElementById('settingsPanel')?.classList.add('hidden');
-  });
-
-  document.getElementById('checkIntervalSelect')?.addEventListener('change', async (e) => {
-    const mins = Number(e.target.value) || 2;
-    await updateSettings({ checkIntervalMinutes: mins });
-    chrome?.runtime?.sendMessage?.({ type: 'UPDATE_SETTINGS', payload: { checkIntervalMinutes: mins } });
-  });
-
-  document.getElementById('sortBySelect')?.addEventListener('change', async (e) => {
-    const val = e.target.value;
-    state.settings.sortBy = val;
-    await updateSettings({ sortBy: val });
-    renderList();
-  });
-
-  document.getElementById('uiScaleSelect')?.addEventListener('change', async (e) => {
-    const val = e.target.value;
-    state.settings.uiScale = val;
-    applyUiScale(val);
-    await updateSettings({ uiScale: val });
-  });
-
-  document.getElementById('notificationsToggle')?.addEventListener('change', async (e) => {
-    await updateSettings({ notificationsEnabled: e.target.checked });
-  });
-
-  document.getElementById('badgeToggle')?.addEventListener('change', async (e) => {
-    await updateSettings({ badgeEnabled: e.target.checked });
-    if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
-      chrome.runtime.sendMessage({ type: 'SYNC_BADGE' });
-    }
-  });
-
-  document.getElementById('debugLoggingToggle')?.addEventListener('change', async (e) => {
-    await updateSettings({ debugLogging: e.target.checked });
-  });
-
-  document.getElementById('debugLiveNotifBtn')?.addEventListener('click', async () => {
-    const list = Object.values(state.streamers);
-    const mock = list[0]
-      ? {
-          ...list[0],
-          title: `🔴 [DEBUG ALERT] ${list[0].title || 'Live Broadcast Test'}`,
-        }
-      : {
-          slug: 'xqc',
-          username: 'xQc',
-          title: '🔴 [DEBUG ALERT] 24H Special Stream',
-          category: 'Just Chatting',
-          viewerCount: 42500,
-        };
-
-    const id = `kick_live_${mock.slug}_${Date.now()}`;
-    const iconUrl = typeof chrome !== 'undefined' && chrome.runtime?.getURL
-      ? chrome.runtime.getURL('assets/icons/icon-128.png')
-      : 'assets/icons/icon-128.png';
-
-    if (typeof chrome !== 'undefined' && chrome.notifications?.create) {
-      chrome.notifications.create(
-        id,
-        {
-          type: 'basic',
-          iconUrl,
-          title: `${mock.username} is live!`,
-          message: `${mock.title}\nCategory: ${mock.category || 'Live'}`,
-          contextMessage: `Viewers: ${formatViewerCount(mock.viewerCount || 0)}`,
-          priority: 2,
-        },
-        (createdId) => {
-          if (chrome.runtime?.lastError) {
-            showFeedback(chrome.runtime.lastError.message || 'Notification error', 'error');
-          } else {
-            showFeedback('Test notification sent!', 'success');
-          }
-        },
-      );
-    } else {
-      showFeedback('Test notification sent (mock mode)!', 'success');
-    }
-  });
-
-  const openPrivacyPage = (e) => {
-    e?.preventDefault?.();
-    const url = typeof chrome !== 'undefined' && chrome.runtime?.getURL
-      ? chrome.runtime.getURL('src/privacy/privacy.html')
-      : '../privacy/privacy.html';
-    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
-      chrome.tabs.create({ url });
-    } else {
-      window.open(url, '_blank');
-    }
-  };
-
+  document.getElementById('settingsToggle')?.addEventListener('click', openOptionsPage);
+  document.getElementById('optionsLink')?.addEventListener('click', openOptionsPage);
   document.getElementById('privacyLink')?.addEventListener('click', openPrivacyPage);
-
-  document.getElementById('openOptionsBtn')?.addEventListener('click', () => {
-    if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
-      chrome.runtime.openOptionsPage();
-    } else {
-      const url = typeof chrome !== 'undefined' && chrome.runtime?.getURL
-        ? chrome.runtime.getURL('src/options/options.html')
-        : '../options/options.html';
-      window.open(url, '_blank');
-    }
-  });
 }
 
 export function checkActiveKickTab() {
@@ -534,19 +428,6 @@ export async function init() {
   state.streamers = streamers;
   state.settings = settings;
 
-  const intSelect = document.getElementById('checkIntervalSelect');
-  if (intSelect && settings.checkIntervalMinutes) intSelect.value = String(settings.checkIntervalMinutes);
-  const sortSelect = document.getElementById('sortBySelect');
-  if (sortSelect && settings.sortBy) sortSelect.value = settings.sortBy;
-  const scaleSelect = document.getElementById('uiScaleSelect');
-  if (scaleSelect && settings.uiScale) scaleSelect.value = String(settings.uiScale);
-  const notifToggle = document.getElementById('notificationsToggle');
-  if (notifToggle) notifToggle.checked = Boolean(settings.notificationsEnabled);
-  const badgeToggle = document.getElementById('badgeToggle');
-  if (badgeToggle) badgeToggle.checked = Boolean(settings.badgeEnabled ?? true);
-  const debugToggle = document.getElementById('debugLoggingToggle');
-  if (debugToggle) debugToggle.checked = Boolean(settings.debugLogging);
-
   applyUiScale(settings.uiScale || '100');
   renderList();
   updateCounters();
@@ -569,6 +450,12 @@ export async function init() {
         }
         if (changes.settings) {
           state.settings = { ...state.settings, ...(changes.settings.newValue || {}) };
+          if (changes.settings.newValue?.uiScale) {
+            applyUiScale(changes.settings.newValue.uiScale);
+          }
+          if (changes.settings.newValue?.sortBy) {
+            renderList();
+          }
         }
       }
     });
