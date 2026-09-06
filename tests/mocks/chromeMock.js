@@ -19,6 +19,7 @@ export function createChromeMock() {
         listeners.delete(fn);
       },
       hasListener(fn) {
+        if (!fn) return listeners.size > 0;
         return listeners.has(fn);
       },
       async trigger(...args) {
@@ -275,7 +276,11 @@ export function createChromeMock() {
           }
         };
 
-        onMessage.trigger(message, { id: 'test-sender' }, sendResponse);
+        if (onMessage.hasListener()) {
+          onMessage.trigger(message, { id: 'test-sender' }, sendResponse);
+        } else if (typeof callback === 'function') {
+          callback(undefined);
+        }
         return Promise.resolve(responseValue);
       },
     },

@@ -8,6 +8,7 @@ A lightweight Chrome Extension (Manifest V3) that tracks your favorite Kick.com 
 
 - **Live Desktop Alerts** — Instant notifications when streamers go live.
 - **Toolbar Live Counter** — Green badge on the extension icon showing active streams.
+- **Options Dashboard** — Dedicated options page for polling frequency, UI scaling, sorting preferences, test notifications, and circuit breaker diagnostics.
 - **Global Search** — Search Kick channels directly with autocomplete.
 - **One-Click Watch** — Click any notification or card to open the stream.
 - **100% Local & Private** — All settings stay in your browser. Zero tracking, third-party analytics, or telemetry.

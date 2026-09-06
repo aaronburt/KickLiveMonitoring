@@ -9,12 +9,16 @@
   - `src/services/streamerTracker.js`: State transition engine, rising-edge detection.
 - **Popup UI**:
   - `src/popup/index.html`, `src/popup/popup.css`, `src/popup/popup.js`, `src/popup/uiRenderer.js`, `src/popup/eventHandlers.js`
+- **Options & Privacy**:
+  - `src/options/options.html`, `src/options/options.js`: Dedicated options dashboard for user configurations and diagnostics.
+  - `src/privacy/privacy.html`: Privacy policy, permissions transparency, and data disclosure.
 - **Utilities**:
   - `src/utils/slugValidator.js`: Channel slug normalization, URL parsing, sanitization.
   - `src/utils/formatters.js`: Viewer counts, relative time formatting.
+  - `src/utils/logger.js`: Configurable debug logging utility.
 - **Testing Layer**:
   - `tests/mocks/chromeMock.js`: Comprehensive in-memory mock for Chrome Extension APIs.
-  - Test suites for all services, background managers, UI helpers, and state transitions using `bun test`.
+  - Test suites for all services, background managers, UI helpers, options page, and state transitions using `bun test`.
 
 ## Feature Inventory
 | # | Feature | Description | Milestone | Source |
@@ -79,9 +83,15 @@ src/
     popup.js
     uiRenderer.js
     eventHandlers.js
+  options/
+    options.html
+    options.js
+  privacy/
+    privacy.html
   utils/
     slugValidator.js
     formatters.js
+    logger.js
 tests/
   mocks/
     chromeMock.js
@@ -93,4 +103,8 @@ tests/
   slugValidator.test.js
   formatters.test.js
   alarmManager.test.js
+  options.test.js
+  serviceWorker.test.js
+  adversarial.test.js
+  fuzz.test.js
 ```

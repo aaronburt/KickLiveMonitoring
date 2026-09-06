@@ -478,6 +478,17 @@ function bindEvents() {
   };
 
   document.getElementById('privacyLink')?.addEventListener('click', openPrivacyPage);
+
+  document.getElementById('openOptionsBtn')?.addEventListener('click', () => {
+    if (typeof chrome !== 'undefined' && chrome.runtime?.openOptionsPage) {
+      chrome.runtime.openOptionsPage();
+    } else {
+      const url = typeof chrome !== 'undefined' && chrome.runtime?.getURL
+        ? chrome.runtime.getURL('src/options/options.html')
+        : '../options/options.html';
+      window.open(url, '_blank');
+    }
+  });
 }
 
 export function checkActiveKickTab() {
