@@ -65,7 +65,7 @@ describe('options page', () => {
     resetCircuit();
 
     elements = {
-      checkIntervalSelect: createMockElement('checkIntervalSelect', { value: '2' }),
+      checkIntervalSelect: createMockElement('checkIntervalSelect', { value: '5' }),
       sortBySelect: createMockElement('sortBySelect', { value: 'viewers' }),
       uiScaleSelect: createMockElement('uiScaleSelect', { value: '100' }),
       badgeToggle: createMockElement('badgeToggle', { checked: true }),
@@ -104,7 +104,7 @@ describe('options page', () => {
 
   it('populates form with default settings', async () => {
     await populateForm();
-    expect(elements.checkIntervalSelect.value).toBe('2');
+    expect(elements.checkIntervalSelect.value).toBe('5');
     expect(elements.sortBySelect.value).toBe('viewers');
     expect(elements.uiScaleSelect.value).toBe('100');
     expect(elements.badgeToggle.checked).toBe(true);
@@ -276,7 +276,7 @@ describe('options page', () => {
 
   it('runs initOptions seamlessly', async () => {
     await initOptions();
-    expect(elements.checkIntervalSelect.value).toBe('2');
+    expect(elements.checkIntervalSelect.value).toBe('5');
   });
 
   it('handles background notification failure gracefully', async () => {

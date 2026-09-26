@@ -1,5 +1,5 @@
 export const DEFAULT_SETTINGS = {
-  checkIntervalMinutes: 2,
+  checkIntervalMinutes: 5,
   notificationsEnabled: true,
   debugLogging: false,
   sortBy: 'viewers',

@@ -46,7 +46,7 @@ export async function populateForm() {
 
   const checkIntervalSelect = document.getElementById('checkIntervalSelect');
   if (checkIntervalSelect) {
-    checkIntervalSelect.value = String(settings.checkIntervalMinutes || 2);
+    checkIntervalSelect.value = String(settings.checkIntervalMinutes || 5);
   }
 
   const sortBySelect = document.getElementById('sortBySelect');

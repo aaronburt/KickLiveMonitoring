@@ -112,7 +112,7 @@ describe('storageService', () => {
       const streamers = await getStreamers();
       expect(streamers).toEqual({});
       const settings = await getSettings();
-      expect(settings.checkIntervalMinutes).toBe(2);
+      expect(settings.checkIntervalMinutes).toBe(5);
       const synced = await getSyncedWatchlist();
       expect(synced).toEqual([]);
       await setStreamer('test', { slug: 'test' });
