@@ -38,6 +38,21 @@ bun test
 
 ---
 
+## Production Build
+
+To compile a clean local production build with distribution artifacts:
+
+```bash
+bun run build
+```
+
+This compiles:
+- `dist/unpacked/` — Stripped production files ready for "Load unpacked".
+- `dist/kick-monitor-v<version>.zip` — Store-ready archive for Chrome Web Store / Edge Add-ons.
+- `dist/kick-monitor-v<version>.crx` — Packed binary extension signed with persistent private key `kick-monitor.pem`.
+
+---
+
 ## Disclaimer
 
 **Kick Monitor** is an independent, open-source community project and is **not** affiliated with, endorsed by, or sponsored by Kick.com or Kick Community Pty Ltd. Built with the assistance of AI and reviewed/tested by a human developer.
