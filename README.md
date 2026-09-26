@@ -6,14 +6,15 @@ A lightweight Chrome Extension (Manifest V3) that tracks your favorite Kick.com 
 
 ## Features
 
+- **Real-Time WebSocket Engine** — Single multiplexed WebSocket connection to Kick's Pusher cluster for instant (<1s) live alerts with automatic HTTP polling fallback.
 - **Live Desktop Alerts** — Instant notifications when streamers go live.
 - **Toolbar Live Counter** — Green badge on the extension icon showing active streams.
-- **Options Dashboard** — Dedicated options page for polling frequency, UI scaling, sorting preferences, test notifications, and circuit breaker diagnostics.
+- **Options Dashboard** — Dedicated options page for polling frequency, UI scaling, sorting preferences, test notifications, real-time WebSocket status, and circuit breaker diagnostics.
 - **Global Search** — Search Kick channels directly with autocomplete.
 - **One-Click Watch** — Click any notification or card to open the stream.
 - **100% Local & Private** — All settings stay in your browser. Zero tracking, third-party analytics, or telemetry.
 - **Smart API Protection & Circuit Breaker** — Canary pre-flight requests, strict schema verification, and automatic exponential backoff prevent rate-limiting or API hammering.
-- **Custom Polling** — Configurable check intervals (1, 2, 5, 10, 15 minutes).
+- **Custom Polling Fallback** — Configurable check intervals (1, 2, 5, 10, 15 minutes) when disconnected.
 
 ---
 

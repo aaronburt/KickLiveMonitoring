@@ -17,6 +17,11 @@ import { validateSlug } from '../utils/slugValidator.js';
 import { createLiveNotification } from '../background/notificationManager.js';
 import { updateBadgeFromStreamers } from '../background/badgeManager.js';
 import { logDebug } from '../utils/logger.js';
+import {
+  subscribeChannel,
+  unsubscribeChannel,
+  syncSubscriptions,
+} from './kickWebSocket.js';
 
 export async function checkStreamerStatus(slug, options = {}) {
   const customFetch = options.fetchFn || fetch;
@@ -165,6 +170,9 @@ export async function addNewStreamer(rawInput, options = {}) {
   };
 
   await setStreamer(slug, record);
+  if (record.channelId) {
+    subscribeChannel(record.channelId);
+  }
   const all = await getStreamers();
   await updateBadgeFromStreamers(all);
   await logDebug('Add Streamer', slug, { username: record.username, isLive: record.isLive });
@@ -177,9 +185,78 @@ export async function removeTrackedStreamer(rawSlug) {
     return { success: false, error: 'Invalid streamer slug' };
   }
   const slug = rawSlug.trim().toLowerCase();
+  const existing = await getStreamer(slug);
+  if (existing?.channelId) {
+    unsubscribeChannel(existing.channelId);
+  }
   await removeStreamer(slug);
   const remaining = await getStreamers();
   await updateBadgeFromStreamers(remaining);
   await logDebug('Remove Streamer', slug);
   return { success: true, error: null };
+}
+
+export async function syncWebSocketSubscriptions() {
+  const streamers = await getStreamers();
+  const channelIds = Object.values(streamers)
+    .map((s) => s.channelId)
+    .filter((id) => typeof id === 'number' && id > 0);
+  syncSubscriptions(channelIds);
+}
+
+export async function handleLiveStreamEvent(channelId, livestreamData = {}) {
+  const streamers = await getStreamers();
+  const matchedSlug = Object.keys(streamers).find((slug) => streamers[slug].channelId === channelId);
+  if (!matchedSlug) return null;
+
+  const previous = streamers[matchedSlug];
+  const wasLive = Boolean(previous?.isLive);
+
+  const updated = {
+    ...previous,
+    isLive: true,
+    title: livestreamData.session_title || livestreamData.title || previous.title || '',
+    category: livestreamData.category?.name || livestreamData.channel?.category?.name || previous.category || '',
+    viewerCount: typeof livestreamData.viewers === 'number' ? livestreamData.viewers : (previous.viewerCount || 0),
+    thumbnailUrl: livestreamData.thumbnail?.url || livestreamData.thumbnail?.src || previous.thumbnailUrl || '',
+    startedAt: livestreamData.created_at || previous.startedAt || new Date().toISOString(),
+    lastCheckedAt: Date.now(),
+    error: null,
+  };
+
+  if (!wasLive) {
+    const settings = await getSettings();
+    if (settings.notificationsEnabled) {
+      await createLiveNotification(updated);
+      updated.lastNotifiedAt = Date.now();
+      await logDebug('WebSocket Alert Sent', `Streamer ${updated.username || matchedSlug} went LIVE`);
+    }
+  }
+
+  await setStreamer(matchedSlug, updated);
+  const latest = await getStreamers();
+  await updateBadgeFromStreamers(latest);
+
+  return updated;
+}
+
+export async function handleStreamEndEvent(channelId) {
+  const streamers = await getStreamers();
+  const matchedSlug = Object.keys(streamers).find((slug) => streamers[slug].channelId === channelId);
+  if (!matchedSlug) return null;
+
+  const previous = streamers[matchedSlug];
+  const updated = {
+    ...previous,
+    isLive: false,
+    viewerCount: 0,
+    lastCheckedAt: Date.now(),
+  };
+
+  await setStreamer(matchedSlug, updated);
+  const latest = await getStreamers();
+  await updateBadgeFromStreamers(latest);
+  await logDebug('WebSocket Stream Ended', matchedSlug);
+
+  return updated;
 }

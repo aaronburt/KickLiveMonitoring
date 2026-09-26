@@ -448,6 +448,18 @@
             <button type="button" id="resetCircuitBtn" class="btn btn-secondary">Reset Breaker</button>
           </div>
         </div>
+        <div class="setting-item">
+          <div class="setting-info">
+            <span class="setting-title">Real-Time WebSocket Engine</span>
+            <span class="setting-desc">Direct multiplexed connection for instant stream notifications with automatic HTTP polling fallback.</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <span id="wsStatusBadge" class="status-badge status-closed">
+              <span class="status-dot"></span>
+              <span id="wsStatusText">Real-Time (Connected)</span>
+            </span>
+          </div>
+        </div>
       </div>
     </div>
 

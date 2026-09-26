@@ -30,6 +30,8 @@ export function validateKickSearchSchema(data) {
 
 function fallback(slug, error = null) {
   return {
+    channelId: null,
+    chatroomId: null,
     slug,
     username: slug,
     avatarUrl: '',
@@ -90,6 +92,8 @@ export async function fetchChannelData(rawSlug, customFetch = fetch) {
       || '';
 
     return {
+      channelId: typeof data.id === 'number' ? data.id : null,
+      chatroomId: typeof data.chatroom?.id === 'number' ? data.chatroom.id : null,
       slug: (data.slug || slug).toLowerCase(),
       username: data.user?.username || data.slug || slug,
       avatarUrl: data.user?.profile_pic || data.user?.profilepic || '',

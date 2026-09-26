@@ -12,7 +12,17 @@ import {
   checkAllStreamers,
   checkStreamerStatus,
   addNewStreamer,
+  syncWebSocketSubscriptions,
+  handleLiveStreamEvent,
+  handleStreamEndEvent,
 } from '../services/streamerTracker.js';
+import {
+  connectWebSocket,
+  onLiveEvent,
+  onStopEvent,
+  isWebSocketConnected,
+  getWebSocketState,
+} from '../services/kickWebSocket.js';
 import {
   getCircuitStatus,
   resetCircuit,
@@ -32,6 +42,7 @@ export const MESSAGE_TYPES = {
   TRIGGER_TEST_NOTIFICATION: 'TRIGGER_TEST_NOTIFICATION',
   GET_CIRCUIT_STATUS: 'GET_CIRCUIT_STATUS',
   RESET_CIRCUIT: 'RESET_CIRCUIT',
+  GET_WEBSOCKET_STATUS: 'GET_WEBSOCKET_STATUS',
 };
 
 export function handleRuntimeMessage(message, sender, sendResponse) {
@@ -103,6 +114,15 @@ export function handleRuntimeMessage(message, sender, sendResponse) {
     return true;
   }
 
+  if (type === MESSAGE_TYPES.GET_WEBSOCKET_STATUS) {
+    const status = {
+      connected: isWebSocketConnected(),
+      state: getWebSocketState(),
+    };
+    sendResponse({ success: true, data: status });
+    return false;
+  }
+
   return false;
 }
 
@@ -121,6 +141,8 @@ export async function onExtensionStartup() {
   await syncCloudWatchlist();
   const streamers = await getStreamers();
   await updateBadgeFromStreamers(streamers);
+  connectWebSocket();
+  await syncWebSocketSubscriptions();
   await checkAllStreamers();
 }
 
@@ -129,16 +151,28 @@ export async function onExtensionInstalled() {
   await syncCloudWatchlist();
   const streamers = await getStreamers();
   await updateBadgeFromStreamers(streamers);
+  connectWebSocket();
+  await syncWebSocketSubscriptions();
 }
 
 export async function onStorageChange(changes, areaName) {
   if (areaName === 'local' && (changes?.streamers || changes?.settings)) {
     const streamers = changes.streamers?.newValue || await getStreamers();
     await updateBadgeFromStreamers(streamers);
+    if (changes?.streamers) {
+      await syncWebSocketSubscriptions();
+    }
   }
 }
 
 export function registerServiceWorkerListeners() {
+  onLiveEvent((channelId, data) => {
+    handleLiveStreamEvent(channelId, data);
+  });
+  onStopEvent((channelId) => {
+    handleStreamEndEvent(channelId);
+  });
+
   if (typeof chrome !== 'undefined') {
     chrome.runtime?.onInstalled?.addListener(onExtensionInstalled);
     chrome.runtime?.onStartup?.addListener(onExtensionStartup);

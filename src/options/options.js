@@ -75,6 +75,7 @@ export async function populateForm() {
   }
 
   updateCircuitDisplay();
+  await updateWebSocketDisplay();
 }
 
 async function notifyBackground(type, payload) {
@@ -86,6 +87,24 @@ async function notifyBackground(type, payload) {
     }
   }
   return null;
+}
+
+export async function updateWebSocketDisplay() {
+  const badge = document.getElementById('wsStatusBadge');
+  const text = document.getElementById('wsStatusText');
+  if (!badge || !text) return;
+
+  const res = await notifyBackground('GET_WEBSOCKET_STATUS');
+  if (res?.success && res.data?.connected) {
+    badge.className = 'status-badge status-closed';
+    text.textContent = 'Real-Time (Connected)';
+  } else if (res?.success && res.data?.state === 'CONNECTING') {
+    badge.className = 'status-badge status-open';
+    text.textContent = 'Connecting...';
+  } else {
+    badge.className = 'status-badge status-open';
+    text.textContent = 'HTTP Polling Fallback';
+  }
 }
 
 export function bindOptionEvents() {
@@ -132,6 +151,7 @@ export function bindOptionEvents() {
     resetCircuit();
     await notifyBackground('RESET_CIRCUIT');
     updateCircuitDisplay();
+    await updateWebSocketDisplay();
     showToast('Circuit breaker reset');
   });
 

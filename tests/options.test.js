@@ -73,6 +73,8 @@ describe('options page', () => {
       debugLoggingToggle: createMockElement('debugLoggingToggle', { checked: false }),
       circuitStatusBadge: createMockElement('circuitStatusBadge'),
       circuitStatusText: createMockElement('circuitStatusText'),
+      wsStatusBadge: createMockElement('wsStatusBadge'),
+      wsStatusText: createMockElement('wsStatusText'),
       resetCircuitBtn: createMockElement('resetCircuitBtn'),
       testNotifBtn: createMockElement('testNotifBtn'),
       resetDefaultsBtn: createMockElement('resetDefaultsBtn'),

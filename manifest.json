@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Kick Monitor",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "Monitors live streams and sends instant desktop notifications when channels go live on Kick.",
   "icons": {
     "16": "assets/icons/icon-16.png",

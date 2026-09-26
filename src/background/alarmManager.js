@@ -1,5 +1,12 @@
+import {
+  isWebSocketConnected,
+  connectWebSocket,
+} from '../services/kickWebSocket.js';
+import {
+  checkAllStreamers,
+  syncWebSocketSubscriptions,
+} from '../services/streamerTracker.js';
 import { getSettings } from '../services/storageService.js';
-import { checkAllStreamers } from '../services/streamerTracker.js';
 import { logDebug } from '../utils/logger.js';
 
 export const POLL_ALARM_NAME = 'KICK_MONITOR_POLL_ALARM';
@@ -22,7 +29,15 @@ export async function handleAlarm(alarm) {
   if (alarm?.name === POLL_ALARM_NAME) {
     await logDebug('Alarm Fired', alarm.name);
     try {
-      await checkAllStreamers();
+      if (isWebSocketConnected()) {
+        await logDebug('Alarm Check', 'WebSocket active. Lightweight sync performed.');
+        await syncWebSocketSubscriptions();
+      } else {
+        await logDebug('Alarm Fallback', 'WebSocket disconnected. Running full HTTP sweep.');
+        await checkAllStreamers();
+        connectWebSocket();
+        await syncWebSocketSubscriptions();
+      }
     } catch {}
   }
 }

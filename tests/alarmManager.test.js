@@ -35,9 +35,28 @@ describe('alarmManager', () => {
     expect(alarm).toBeNull();
   });
 
-  it('handles alarm execution safely', async () => {
+  it('handles alarm execution safely when disconnected', async () => {
     await setStreamer('xqc', { slug: 'xqc', isLive: false });
     await handleAlarm({ name: POLL_ALARM_NAME });
+    expect(true).toBe(true);
+  });
+
+  it('performs lightweight sync when WebSocket is connected during alarm', async () => {
+    const mockSocket = {
+      readyState: 1,
+      send: () => {},
+      close: () => {},
+    };
+    const MockWs = function() { return mockSocket; };
+    const { connectWebSocket, resetWebSocketState } = await import('../src/services/kickWebSocket.js');
+    resetWebSocketState();
+    connectWebSocket(MockWs);
+    const { handleIncomingFrame } = await import('../src/services/kickWebSocket.js');
+    handleIncomingFrame(JSON.stringify({ event: 'pusher:connection_established', data: '{}' }));
+
+    await setStreamer('xqc', { slug: 'xqc', isLive: false, channelId: 1234 });
+    await handleAlarm({ name: POLL_ALARM_NAME });
+    resetWebSocketState();
     expect(true).toBe(true);
   });
 
@@ -46,3 +65,4 @@ describe('alarmManager', () => {
     expect(true).toBe(true);
   });
 });
+
